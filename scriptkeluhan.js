@@ -86,16 +86,17 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Siapkan data dasar
         const formData = {
-          batch_id: batchId, // ID unik untuk kelompok data ini
+          batch_id: batchId,
           kebun: keluhanForm.kebun.value,
           divisi: keluhanForm.divisi.value,
           blok: keluhanForm.blok.value,
           pemanen: keluhanForm.pemanen.value,
           pp: keluhanForm.pp.value,
+          status: document.getElementById('status').value, // 'keluhan' atau 'perbaikan'
           keluhans: []
         };
   
-        // Proses setiap kelompok keluhan-perbaikan
+        // Proses setiap kelompok keluhan
         const groups = document.querySelectorAll('.perbaikan-group');
         
         for (let i = 0; i < groups.length; i++) {
@@ -103,8 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const keluhanData = {
             keluhan: group.querySelector('textarea[name="keluhan"]').value,
             tanggal_keluhan: group.querySelector('input[name="tanggal"]').value,
-            perbaikan: group.querySelector('textarea[name="perbaikan[]"]').value,
-            tanggal_perbaikan: group.querySelector('input[name="tanggal_perbaikan[]"]').value
+            perbaikan: group.querySelector('textarea[name="perbaikan[]"]').value || null,
+            tanggal_perbaikan: group.querySelector('input[name="tanggal_perbaikan[]"]').value || null
           };
   
           // Proses foto keluhan
@@ -114,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
             keluhanData.foto_keluhan_name = fotoKeluhan.name;
           }
   
-          // Proses foto perbaikan
+          // Proses foto perbaikan (jika ada)
           const fotoPerbaikan = group.querySelector('input[name="foto_perbaikan[]"]').files[0];
           if (fotoPerbaikan) {
             keluhanData.foto_perbaikan = await toBase64(fotoPerbaikan);
@@ -134,13 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
           mode: 'no-cors'
         });
   
-        showToast("Data keluhan berhasil dikirim", "success");
+        showToast("Data berhasil dikirim", "success");
         setTimeout(() => {
           keluhanForm.reset();
         }, 2000);
         
       } catch (err) {
-        showToast("Gagal menyimpan keluhan: " + err.message, "error");
+        showToast("Gagal menyimpan data: " + err.message, "error");
         console.error(err);
       } finally {
         submitBtn.disabled = false;
