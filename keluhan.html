@@ -53,10 +53,10 @@
         <input type="text" class="form-control" id="pp" name="pp" required>
       </div>
 
-      <div class="mb-3">
-        <label for="tanggal" class="form-label">Tanggal Keluhan</label>
-        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
-      </div>
+      <h4 class="mt-4 mb-3">Permasalahan dan Perbaikan</h4>
+
+      <div id="perbaikan-wrapper">
+      <div class="perbaikan-group border rounded p-3 mb-3 alert alert-primary">
 
       <div class="mb-3">
         <label for="keluhan" class="form-label">Keluhan Pemanen</label>
@@ -64,28 +64,32 @@
       </div>
 
       <div class="mb-3">
+        <label for="tanggal" class="form-label">Tanggal Keluhan</label>
+        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+      </div>
+
+      <div class="mb-3">
         <label for="foto_keluhan" class="form-label">Foto Keluhan</label>
         <input type="file" class="form-control" id="foto_keluhan" name="foto_keluhan" accept="image/*" capture="environment">
       </div>
-
-      <h4 class="mt-4 mb-3">Perbaikan</h4>
-
-      <div id="perbaikan-wrapper">
-        <div class="perbaikan-group border rounded p-3 mb-3 alert alert-primary">
-          <div class="mb-2">
-            <label>Deskripsi Perbaikan</label>
-            <textarea name="perbaikan[]" class="form-control" rows="2" required></textarea>
-          </div>
-          <div class="mb-2">
-            <label>Tanggal Perbaikan</label>
-            <input type="date" name="tanggal_perbaikan[]" class="form-control" required>
-          </div>
-          <div class="mb-2">
-            <label>Foto Perbaikan</label>
-            <input type="file" name="foto_perbaikan[]" class="form-control" accept="image/*" capture="environment">
-          </div>
-          <button type="button" class="btn btn-danger btn-hapus-input">Hapus Perbaikan</button>
-        </div>
+        
+      <div class="mb-2">
+        <label>Deskripsi Perbaikan</label>
+        <textarea name="perbaikan[]" class="form-control" rows="2" required></textarea>
+      </div>
+        
+      <div class="mb-2">
+        <label>Tanggal Perbaikan</label>
+        <input type="date" name="tanggal_perbaikan[]" class="form-control" required>
+      </div>
+        
+      <div class="mb-2">
+        <label>Foto Perbaikan</label>
+        <input type="file" name="foto_perbaikan[]" class="form-control" accept="image/*" capture="environment">
+      </div>
+        
+      <button type="button" class="btn btn-danger btn-hapus-input">Hapus Perbaikan</button>
+      </div>
       </div>
       
       <button type="button" class="btn btn-primary mb-3" id="btn-tambah">+ Tambah Perbaikan</button>
