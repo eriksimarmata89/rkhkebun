@@ -4,10 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const toastIcon = toast?.querySelector(".toast-icon");
   const toastMessage = toast?.querySelector(".toast-message");
 
-  // Toast notification function
+  // Fungsi toast notification
   function showToast(message, type = "success", onClick = null) {
     if (!toast) return;
-
     toastMessage.textContent = message;
     toastIcon.textContent = type === "success" ? "✔️" : type === "error" ? "❌" : "⚠️";
     toast.className = "toast show " + type;
@@ -21,50 +20,39 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       setTimeout(() => {
         toast.classList.add("hide");
-        setTimeout(() => {
-          toast.className = "toast " + type;
-        }, 400);
+        setTimeout(() => toast.className = "toast " + type, 400);
       }, 4000);
     }
   }
 
-  // === TAMBAH INPUT PERBAIKAN ===
+  // Fungsi untuk menambah input perbaikan
   document.getElementById("btn-tambah")?.addEventListener("click", () => {
     const wrapper = document.getElementById("perbaikan-wrapper");
     const lastGroup = wrapper?.querySelector(".perbaikan-group:last-child");
-
+    
     if (!lastGroup) {
       showToast("Tidak ada entri yang bisa digandakan!", "error");
       return;
     }
 
     const clone = lastGroup.cloneNode(true);
-    clone.querySelectorAll("input").forEach(input => input.value = "");
-    clone.querySelectorAll("textarea").forEach(textarea => textarea.value = "");
+    clone.querySelectorAll("input, textarea").forEach(el => el.value = "");
 
-    const alertClasses = [
-      ["alert", "alert-primary"],
-      ["alert", "alert-success"],
-      ["alert", "alert-info"],
-      ["alert", "alert-danger"],
-      ["alert", "alert-warning"]
-    ];
-
-    clone.classList.remove("alert", "alert-primary", "alert-success", "alert-info", "alert-danger", "alert-warning");
-
-    const allGroups = wrapper.querySelectorAll(".perbaikan-group");
-    const colorIndex = allGroups.length % alertClasses.length;
-    clone.classList.add(...alertClasses[colorIndex]);
+    const colors = ["alert-primary", "alert-success", "alert-info", "alert-danger", "alert-warning"];
+    const colorIndex = wrapper.querySelectorAll(".perbaikan-group").length % colors.length;
+    
+    clone.classList.remove(...clone.classList);
+    clone.classList.add("perbaikan-group", "border", "rounded", "p-3", "mb-3", "alert", colors[colorIndex]);
 
     wrapper.appendChild(clone);
   });
 
-  // === HAPUS INPUT PERBAIKAN ===
+  // Fungsi untuk menghapus input perbaikan
   document.getElementById("perbaikan-wrapper")?.addEventListener("click", (e) => {
     if (e.target.classList.contains("btn-hapus-input")) {
-      const group = e.target.closest(".perbaikan-group");
-      if (document.querySelectorAll(".perbaikan-group").length > 1) {
-        group.remove();
+      const groups = document.querySelectorAll(".perbaikan-group");
+      if (groups.length > 1) {
+        e.target.closest(".perbaikan-group").remove();
       } else {
         showToast("Minimal 1 perbaikan harus ada", "error");
       }
@@ -73,31 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fungsi untuk upload file ke Google Drive
   async function uploadFile(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
-        method: "POST",
-        mode: 'no-cors',
-        body: formData
-      });
+      const formData = new FormData();
+      formData.append("file", file);
       
-      // Karena mode no-cors, response tidak bisa dibaca langsung
-      // Kita perlu menganggap upload berhasil dan melanjutkan
-      return "https://drive.google.com/drive/folders/1EoVzVuEn0N9ak9r_Ix1Y6AzOurpoFP_a?usp=drive_link";
-    } catch (err) {
-      console.error("Upload error:", err);
-      return "";
-    }
-  }
-
-  // Fungsi untuk upload file ke Google Drive
-  async function uploadFile(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    
-    try {
       const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
         method: "POST",
         mode: 'no-cors',
@@ -105,19 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       
       // Karena mode no-cors, kita tidak bisa membaca response
-      // Return URL default atau kosong
+      // Return URL default
       return "https://drive.google.com/drive/folders/1EoVzVuEn0N9ak9r_Ix1Y6AzOurpoFP_a?usp=drive_link";
     } catch (err) {
       console.error("Upload error:", err);
       return "";
     }
   }
-  
-  // === SUBMIT FORM KELUHAN ===
+
+  // Fungsi untuk submit form keluhan
   if (keluhanForm) {
     keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
-      
       showToast("Mengunggah data...", "info");
       
       try {
@@ -125,23 +91,16 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Upload foto keluhan
         const fotoKeluhanFile = formData.get("foto_keluhan");
-        let fotoKeluhanUrl = "";
+        let fotoKeluhanUrl = fotoKeluhanFile && fotoKeluhanFile.size > 0 
+          ? await uploadFile(fotoKeluhanFile) 
+          : "";
         
-        if (fotoKeluhanFile && fotoKeluhanFile.size > 0) {
-          fotoKeluhanUrl = await uploadFile(fotoKeluhanFile);
-        }
-        
-        // Upload foto-foto perbaikan
-        const fotoPerbaikanFiles = formData.getAll("foto_perbaikan[]");
+        // Upload foto perbaikan
         const fotoPerbaikanUrls = [];
+        const fotoPerbaikanFiles = formData.getAll("foto_perbaikan[]");
         
         for (const file of fotoPerbaikanFiles) {
-          if (file && file.size > 0) {
-            const url = await uploadFile(file);
-            fotoPerbaikanUrls.push(url);
-          } else {
-            fotoPerbaikanUrls.push("");
-          }
+          fotoPerbaikanUrls.push(file && file.size > 0 ? await uploadFile(file) : "");
         }
         
         // Siapkan data untuk dikirim
@@ -159,13 +118,10 @@ document.addEventListener("DOMContentLoaded", () => {
           foto_perbaikan: fotoPerbaikanUrls
         };
         
-        // Kirim ke Google Apps Script dengan mode 'cors'
+        // Kirim data ke Google Apps Script
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          mode: 'cors',
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
         
@@ -174,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
           showToast("Keluhan berhasil disimpan", "success");
           keluhanForm.reset();
         } else {
-          showToast("Gagal menyimpan: " + (result.message || "Unknown error"), "error");
+          showToast(result.message || "Gagal menyimpan keluhan", "error");
         }
       } catch (err) {
         console.error("Error:", err);
