@@ -73,53 +73,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === SUBMIT FORM KELUHAN ===
   if (keluhanForm) {
-    keluhanForm.addEventListener("submit", function(e) {
+    keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       
-      const formData = new FormData(keluhanForm);
-      const kebun = formData.get("kebun");
-      const divisi = formData.get("divisi");
-      const blok = formData.get("blok");
-      const pemanen = formData.get("pemanen");
-      const pp = formData.get("pp");
-      const tanggal = formData.get("tanggal");
-      const keluhan = formData.get("keluhan");
-      const fotoKeluhan = formData.get("foto_keluhan");
+      // Tampilkan loading
+      showToast("Mengunggah data...", "info");
       
-      const perbaikan = formData.getAll("perbaikan[]");
-      const tanggalPerbaikan = formData.getAll("tanggal_perbaikan[]");
-      const fotoPerbaikan = formData.getAll("foto_perbaikan[]");
-      
-      // Prepare data for submission
-      const data = new URLSearchParams();
-      data.append("kebun", kebun);
-      data.append("divisi", divisi);
-      data.append("blok", blok);
-      data.append("pemanen", pemanen);
-      data.append("pp", pp);
-      data.append("tanggal", tanggal);
-      data.append("keluhan", keluhan);
-      data.append("foto_keluhan", fotoKeluhan.name);
-      
-      perbaikan.forEach((desc, i) => {
-        data.append("perbaikan[]", desc);
-        data.append("tanggal_perbaikan[]", tanggalPerbaikan[i]);
-        data.append("foto_perbaikan[]", fotoPerbaikan[i]?.name || "");
-      });
-      
-      // Send to Google Apps Script
-      fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
-        method: "POST",
-        body: data
-      })
-      .then(res => res.text())
-      .then(response => {
+      try {
+        const formData = new FormData(keluhanForm);
+        
+        // Upload foto keluhan terlebih dahulu
+        const fotoKeluhanFile = formData.get("foto_keluhan");
+        let fotoKeluhanUrl = "";
+        
+        if (fotoKeluhanFile && fotoKeluhanFile.size > 0) {
+          fotoKeluhanUrl = await uploadFile(fotoKeluhanFile);
+        }
+        
+        // Upload foto-foto perbaikan
+        const fotoPerbaikanFiles = formData.getAll("foto_perbaikan[]");
+        const fotoPerbaikanUrls = [];
+        
+        for (const file of fotoPerbaikanFiles) {
+          if (file && file.size > 0) {
+            const url = await uploadFile(file);
+            fotoPerbaikanUrls.push(url);
+          } else {
+            fotoPerbaikanUrls.push("");
+          }
+        }
+        
+        // Siapkan data untuk dikirim
+        const data = {
+          kebun: formData.get("kebun"),
+          divisi: formData.get("divisi"),
+          blok: formData.get("blok"),
+          pemanen: formData.get("pemanen"),
+          pp: formData.get("pp"),
+          tanggal: formData.get("tanggal"),
+          keluhan: formData.get("keluhan"),
+          foto_keluhan: fotoKeluhanUrl,
+          perbaikan: formData.getAll("perbaikan[]"),
+          tanggal_perbaikan: formData.getAll("tanggal_perbaikan[]"),
+          foto_perbaikan: fotoPerbaikanUrls
+        };
+        
+        // Kirim ke Google Apps Script
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.text();
         showToast("Keluhan berhasil disimpan", "success");
         keluhanForm.reset();
-      })
-      .catch(err => {
+      } catch (err) {
+        console.error("Error:", err);
         showToast("Gagal menyimpan keluhan: " + err.message, "error");
-      });
+      }
     });
+  }
+  
+  // Fungsi untuk upload file ke Google Drive
+  async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
+      method: "POST",
+      body: formData
+    });
+    
+    const result = await response.json();
+    return result.url || "";
   }
 });
