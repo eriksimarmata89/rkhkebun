@@ -92,18 +92,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Fungsi untuk upload file ke Google Drive
+  async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
+        method: "POST",
+        mode: 'no-cors',
+        body: formData
+      });
+      
+      // Karena mode no-cors, kita tidak bisa membaca response
+      // Return URL default atau kosong
+      return "https://drive.google.com/drive/folders/1EoVzVuEn0N9ak9r_Ix1Y6AzOurpoFP_a?usp=drive_link";
+    } catch (err) {
+      console.error("Upload error:", err);
+      return "";
+    }
+  }
+  
   // === SUBMIT FORM KELUHAN ===
   if (keluhanForm) {
     keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       
-      // Tampilkan loading
       showToast("Mengunggah data...", "info");
       
       try {
         const formData = new FormData(keluhanForm);
         
-        // Upload foto keluhan terlebih dahulu
+        // Upload foto keluhan
         const fotoKeluhanFile = formData.get("foto_keluhan");
         let fotoKeluhanUrl = "";
         
@@ -139,18 +159,23 @@ document.addEventListener("DOMContentLoaded", () => {
           foto_perbaikan: fotoPerbaikanUrls
         };
         
-        // Kirim ke Google Apps Script
+        // Kirim ke Google Apps Script dengan mode 'cors'
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
+          mode: 'cors',
           body: JSON.stringify(data)
         });
         
-        const result = await response.text();
-        showToast("Keluhan berhasil disimpan", "success");
-        keluhanForm.reset();
+        const result = await response.json();
+        if (result.success) {
+          showToast("Keluhan berhasil disimpan", "success");
+          keluhanForm.reset();
+        } else {
+          showToast("Gagal menyimpan: " + (result.message || "Unknown error"), "error");
+        }
       } catch (err) {
         console.error("Error:", err);
         showToast("Gagal menyimpan keluhan: " + err.message, "error");
