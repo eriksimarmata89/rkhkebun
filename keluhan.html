@@ -55,44 +55,41 @@
 
       <h4 class="mt-4 mb-3">Permasalahan dan Perbaikan</h4>
 
-      <div id="keluhan-wrapper">
-        <div class="keluhan-group border rounded p-3 mb-3 alert alert-primary">
-          <!-- Keluhan -->
-          <div class="mb-3">
-            <label class="form-label">Keluhan</label>
-            <textarea name="keluhan[]" class="form-control" rows="3" required></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Tanggal Keluhan</label>
-            <input type="date" name="tanggal_keluhan[]" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Foto Keluhan</label>
-            <input type="file" name="foto_keluhan[]" class="form-control" accept="image/*">
-          </div>
-          
-          <!-- Perbaikan -->
-          <div class="perbaikan-wrapper mb-3">
-            <div class="perbaikan-group border rounded p-3 mb-3 bg-light">
-              <div class="mb-2">
-                <label>Deskripsi Perbaikan</label>
-                <textarea name="perbaikan[0][]" class="form-control" rows="2" required></textarea>
-              </div>
-              <div class="mb-2">
-                <label>Tanggal Perbaikan</label>
-                <input type="date" name="tanggal_perbaikan[0][]" class="form-control" required>
-              </div>
-              <div class="mb-2">
-                <label>Foto Perbaikan</label>
-                <input type="file" name="foto_perbaikan[0][]" class="form-control" accept="image/*">
-              </div>
-              <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-perbaikan">Hapus Perbaikan</button>
-            </div>
-          </div>
-          
-          <button type="button" class="btn btn-sm btn-primary btn-tambah-perbaikan">+ Tambah Perbaikan</button>
-          <button type="button" class="btn btn-sm btn-danger btn-hapus-keluhan">Hapus Keluhan</button>
-        </div>
+      <div id="perbaikan-wrapper">
+      <div class="perbaikan-group border rounded p-3 mb-3 alert alert-primary">
+
+      <div class="mb-2">
+        <label for="keluhan" class="form-label">Keluhan Pemanen</label>
+        <textarea class="form-control" id="keluhan" name="keluhan" rows="3" required></textarea>
+      </div>
+
+      <div class="mb-2">
+        <label for="tanggal" class="form-label">Tanggal Keluhan</label>
+        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+      </div>
+
+      <div class="mb-2">
+        <label for="foto_keluhan" class="form-label">Foto Keluhan</label>
+        <input type="file" class="form-control" id="foto_keluhan" name="foto_keluhan" accept="image/*" capture="environment">
+      </div>
+        
+      <div class="mb-2">
+        <label>Deskripsi Perbaikan</label>
+        <textarea name="perbaikan[]" class="form-control" rows="2" required></textarea>
+      </div>
+        
+      <div class="mb-2">
+        <label>Tanggal Perbaikan</label>
+        <input type="date" name="tanggal_perbaikan[]" class="form-control" required>
+      </div>
+        
+      <div class="mb-2">
+        <label>Foto Perbaikan</label>
+        <input type="file" name="foto_perbaikan[]" class="form-control" accept="image/*" capture="environment">
+      </div>
+        
+      <button type="button" class="btn btn-danger btn-hapus-input">Hapus Perbaikan</button>
+      </div>
       </div>
       
       <button type="button" class="btn btn-primary mb-3" id="btn-tambah">+ Tambah Perbaikan</button>
