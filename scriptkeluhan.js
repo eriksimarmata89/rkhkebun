@@ -71,6 +71,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Fungsi untuk upload file ke Google Drive
+  async function uploadFile(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
+        method: "POST",
+        mode: 'no-cors',
+        body: formData
+      });
+      
+      // Karena mode no-cors, response tidak bisa dibaca langsung
+      // Kita perlu menganggap upload berhasil dan melanjutkan
+      return "https://drive.google.com/drive/folders/1EoVzVuEn0N9ak9r_Ix1Y6AzOurpoFP_a?usp=drive_link";
+    } catch (err) {
+      console.error("Upload error:", err);
+      return "";
+    }
+  }
+
   // === SUBMIT FORM KELUHAN ===
   if (keluhanForm) {
     keluhanForm.addEventListener("submit", async function(e) {
@@ -136,34 +157,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  
-// Fungsi untuk upload file ke Google Drive
-async function uploadFile(file) {
-  const formData = new FormData();
-  formData.append("file", file);
-  
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
-      method: "POST",
-      mode: 'no-cors', // Tambahkan ini untuk upload file
-      body: formData
-    });
-    
-    // Karena mode no-cors, response tidak bisa dibaca langsung
-    // Kita perlu menganggap upload berhasil dan melanjutkan
-    return "https://drive.google.com/drive/folders/1EoVzVuEn0N9ak9r_Ix1Y6AzOurpoFP_a?usp=drive_link"; // Ganti dengan URL yang sesuai
-  } catch (err) {
-    console.error("Upload error:", err);
-    return "";
-  }
-}
-
-// Di bagian submit form, modifikasi fetch request:
-const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  mode: 'cors', // Tetap gunakan cors untuk data JSON
-  body: JSON.stringify(data)
 });
