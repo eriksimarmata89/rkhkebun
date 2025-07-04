@@ -73,53 +73,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === SUBMIT FORM KELUHAN ===
   if (keluhanForm) {
-    keluhanForm.addEventListener("submit", function(e) {
+    keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       
       const formData = new FormData(keluhanForm);
-      const kebun = formData.get("kebun");
-      const divisi = formData.get("divisi");
-      const blok = formData.get("blok");
-      const pemanen = formData.get("pemanen");
-      const pp = formData.get("pp");
-      const tanggal = formData.get("tanggal");
-      const keluhan = formData.get("keluhan");
-      const fotoKeluhan = formData.get("foto_keluhan");
+      const data = {};
       
-      const perbaikan = formData.getAll("perbaikan[]");
-      const tanggalPerbaikan = formData.getAll("tanggal_perbaikan[]");
-      const fotoPerbaikan = formData.getAll("foto_perbaikan[]");
+      // Convert FormData to plain object
+      for (let [key, value] of formData.entries()) {
+        if (data[key]) {
+          if (!Array.isArray(data[key])) {
+            data[key] = [data[key]];
+          }
+          data[key].push(value);
+        } else {
+          data[key] = value;
+        }
+      }
       
-      // Prepare data for submission
-      const data = new URLSearchParams();
-      data.append("kebun", kebun);
-      data.append("divisi", divisi);
-      data.append("blok", blok);
-      data.append("pemanen", pemanen);
-      data.append("pp", pp);
-      data.append("tanggal", tanggal);
-      data.append("keluhan", keluhan);
-      data.append("foto_keluhan", fotoKeluhan.name);
-      
-      perbaikan.forEach((desc, i) => {
-        data.append("perbaikan[]", desc);
-        data.append("tanggal_perbaikan[]", tanggalPerbaikan[i]);
-        data.append("foto_perbaikan[]", fotoPerbaikan[i]?.name || "");
-      });
-      
-      // Send to Google Apps Script
-      fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
-        method: "POST",
-        body: data
-      })
-      .then(res => res.text())
-      .then(response => {
-        showToast("Keluhan berhasil disimpan", "success");
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const result = await response.json();
+        showToast(result.message || "Keluhan berhasil disimpan", "success");
         keluhanForm.reset();
-      })
-      .catch(err => {
+      } catch (err) {
         showToast("Gagal menyimpan keluhan: " + err.message, "error");
-      });
+      }
     });
   }
 });
