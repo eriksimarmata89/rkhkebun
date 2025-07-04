@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === SUBMIT FORM KELUHAN ===
+  // Ganti bagian submit form dengan ini:
   if (keluhanForm) {
     keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
@@ -81,45 +81,60 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.textContent = "Menyimpan...";
       
       try {
-        // Konversi file ke base64
-        const fotoKeluhan = document.getElementById('foto_keluhan').files[0];
-        const fotoKeluhanBase64 = fotoKeluhan ? await toBase64(fotoKeluhan) : null;
-        
-        // Konversi semua foto perbaikan
-        const fotoPerbaikanInputs = document.querySelectorAll('input[name="foto_perbaikan[]"]');
-        const fotoPerbaikanPromises = Array.from(fotoPerbaikanInputs).map(input => 
-          input.files[0] ? toBase64(input.files[0]) : Promise.resolve(null)
-        );
-        const fotoPerbaikanBase64 = await Promise.all(fotoPerbaikanPromises);
-        
-        // Siapkan data form
-        const formData = {
+        // Ambil data dasar
+        const baseData = {
           kebun: keluhanForm.kebun.value,
           divisi: keluhanForm.divisi.value,
           blok: keluhanForm.blok.value,
           pemanen: keluhanForm.pemanen.value,
-          pp: keluhanForm.pp.value,
-          tanggal: keluhanForm.tanggal.value,
-          keluhan: keluhanForm.keluhan.value,
-          foto_keluhan: fotoKeluhanBase64,
-          foto_keluhan_name: fotoKeluhan?.name || '',
-          perbaikan: Array.from(document.querySelectorAll('textarea[name="perbaikan[]"]')).map(el => el.value),
-          tanggal_perbaikan: Array.from(document.querySelectorAll('input[name="tanggal_perbaikan[]"]')).map(el => el.value),
-          foto_perbaikan: fotoPerbaikanBase64,
-          foto_perbaikan_names: Array.from(fotoPerbaikanInputs).map(input => input.files[0]?.name || '')
+          pp: keluhanForm.pp.value
         };
-        
-        // Kirim data ke server dengan mode 'cors'
+  
+        // Proses setiap keluhan
+        const keluhanGroups = document.querySelectorAll('.keluhan-group');
+        const allData = [];
+  
+        for (let i = 0; i < keluhanGroups.length; i++) {
+          const group = keluhanGroups[i];
+          const keluhanData = {
+            ...baseData,
+            keluhan: group.querySelector('textarea[name="keluhan[]"]').value,
+            tanggal_keluhan: group.querySelector('input[name="tanggal_keluhan[]"]').value,
+            foto_keluhan: group.querySelector('input[name="foto_keluhan[]"]').files[0] 
+              ? await toBase64(group.querySelector('input[name="foto_keluhan[]"]').files[0]) 
+              : null,
+            foto_keluhan_name: group.querySelector('input[name="foto_keluhan[]"]').files[0]?.name || '',
+            perbaikan: [],
+            tanggal_perbaikan: [],
+            foto_perbaikan: [],
+            foto_perbaikan_names: []
+          };
+  
+          // Proses perbaikan untuk keluhan ini
+          const perbaikanGroups = group.querySelectorAll('.perbaikan-group');
+          for (let j = 0; j < perbaikanGroups.length; j++) {
+            const perbaikanGroup = perbaikanGroups[j];
+            keluhanData.perbaikan.push(perbaikanGroup.querySelector('textarea[name="perbaikan[0][]"]').value);
+            keluhanData.tanggal_perbaikan.push(perbaikanGroup.querySelector('input[name="tanggal_perbaikan[0][]"]').value);
+            
+            const fotoFile = perbaikanGroup.querySelector('input[name="foto_perbaikan[0][]"]').files[0];
+            keluhanData.foto_perbaikan.push(fotoFile ? await toBase64(fotoFile) : null);
+            keluhanData.foto_perbaikan_names.push(fotoFile?.name || '');
+          }
+  
+          allData.push(keluhanData);
+        }
+  
+        // Kirim semua data
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
-          body: JSON.stringify(formData),
+          body: JSON.stringify(allData),
           headers: {
-            'Content-Type': 'text/plain' // Gunakan text/plain untuk menghindari preflight
+            'Content-Type': 'text/plain'
           },
-          mode: 'no-cors' // Mode no-cors untuk menghindari CORS issues
+          mode: 'no-cors'
         });
-        
-        // Karena mode no-cors, response tidak bisa dibaca langsung
+  
         showToast("Keluhan berhasil dikirim", "success");
         setTimeout(() => {
           keluhanForm.reset();
