@@ -28,72 +28,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // === TAMBAH KELUHAN BARU (DENGAN PERBAIKAN OTOMATIS) ===
-  document.getElementById("btn-tambah-keluhan")?.addEventListener("click", () => {
-    const wrapper = document.getElementById("keluhan-wrapper");
-    const keluhanCount = document.querySelectorAll('.keluhan-group').length;
-    
-    const newKeluhan = document.createElement('div');
-    newKeluhan.className = 'keluhan-group border rounded p-3 mb-3 alert alert-primary';
-    newKeluhan.innerHTML = `
-      <div class="mb-3">
-        <label class="form-label">Keluhan</label>
-        <textarea name="keluhan[]" class="form-control" rows="3" required></textarea>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Tanggal Keluhan</label>
-        <input type="date" name="tanggal_keluhan[]" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Foto Keluhan</label>
-        <input type="file" name="foto_keluhan[]" class="form-control" accept="image/*">
-      </div>
-      
-      <!-- Perbaikan otomatis dibuat saat keluhan ditambah -->
-      <div class="perbaikan-wrapper">
-        <div class="perbaikan-group border rounded p-3 mb-3 bg-light">
-          <div class="mb-2">
-            <label>Deskripsi Perbaikan</label>
-            <textarea name="perbaikan[${keluhanCount}][]" class="form-control" rows="2" required></textarea>
-          </div>
-          <div class="mb-2">
-            <label>Tanggal Perbaikan</label>
-            <input type="date" name="tanggal_perbaikan[${keluhanCount}][]" class="form-control" required>
-          </div>
-          <div class="mb-2">
-            <label>Foto Perbaikan</label>
-            <input type="file" name="foto_perbaikan[${keluhanCount}][]" class="form-control" accept="image/*">
-          </div>
-          <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-perbaikan">Hapus Perbaikan</button>
-        </div>
-      </div>
-      
-      <button type="button" class="btn btn-sm btn-danger btn-hapus-keluhan">Hapus Keluhan</button>
-    `;
-    
-    wrapper.appendChild(newKeluhan);
-  });
+  // === TAMBAH INPUT KELUHAN DAN PERBAIKAN ===
+  document.getElementById("btn-tambah")?.addEventListener("click", () => {
+    const wrapper = document.getElementById("perbaikan-wrapper");
+    const lastGroup = wrapper?.querySelector(".perbaikan-group:last-child");
 
-  // === HAPUS PERBAIKAN ===
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-hapus-perbaikan")) {
-      const perbaikanGroup = e.target.closest('.perbaikan-group');
-      if (perbaikanGroup.parentElement.querySelectorAll('.perbaikan-group').length > 1) {
-        perbaikanGroup.remove();
-      } else {
-        showToast("Minimal 1 perbaikan harus ada", "error");
-      }
+    if (!lastGroup) {
+      showToast("Tidak ada entri yang bisa digandakan!", "error");
+      return;
     }
+
+    const clone = lastGroup.cloneNode(true);
+    clone.querySelectorAll("input").forEach(input => input.value = "");
+    clone.querySelectorAll("textarea").forEach(textarea => textarea.value = "");
+
+    const alertClasses = [
+      ["alert", "alert-primary"],
+      ["alert", "alert-success"],
+      ["alert", "alert-info"],
+      ["alert", "alert-danger"],
+      ["alert", "alert-warning"]
+    ];
+
+    clone.classList.remove("alert", "alert-primary", "alert-success", "alert-info", "alert-danger", "alert-warning");
+
+    const allGroups = wrapper.querySelectorAll(".perbaikan-group");
+    const colorIndex = allGroups.length % alertClasses.length;
+    clone.classList.add(...alertClasses[colorIndex]);
+
+    wrapper.appendChild(clone);
   });
 
-  // === HAPUS KELUHAN ===
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-hapus-keluhan")) {
-      const keluhanGroup = e.target.closest('.keluhan-group');
-      if (document.querySelectorAll('.keluhan-group').length > 1) {
-        keluhanGroup.remove();
+  // === HAPUS INPUT KELUHAN DAN PERBAIKAN ===
+  document.getElementById("perbaikan-wrapper")?.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-hapus-input")) {
+      const group = e.target.closest(".perbaikan-group");
+      if (document.querySelectorAll(".perbaikan-group").length > 1) {
+        group.remove();
       } else {
-        showToast("Minimal 1 keluhan harus ada", "error");
+        showToast("Minimal 1 keluhan dan perbaikan harus ada", "error");
       }
     }
   });
@@ -108,97 +81,58 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.textContent = "Menyimpan...";
       
       try {
-        const baseData = {
+        // Siapkan data dasar
+        const formData = {
           kebun: keluhanForm.kebun.value,
           divisi: keluhanForm.divisi.value,
           blok: keluhanForm.blok.value,
           pemanen: keluhanForm.pemanen.value,
-          pp: keluhanForm.pp.value
+          pp: keluhanForm.pp.value,
+          keluhans: []
         };
 
-        const allData = [];
-        const keluhanGroups = document.querySelectorAll('.keluhan-group');
-
-        for (let i = 0; i < keluhanGroups.length; i++) {
-          const group = keluhanGroups[i];
+        // Proses setiap kelompok keluhan-perbaikan
+        const groups = document.querySelectorAll('.perbaikan-group');
+        
+        for (let i = 0; i < groups.length; i++) {
+          const group = groups[i];
           const keluhanData = {
-            ...baseData,
-            keluhan: group.querySelector('textarea[name="keluhan[]"]').value,
-            tanggal_keluhan: group.querySelector('input[name="tanggal_keluhan[]"]').value,
-            foto_keluhan: group.querySelector('input[name="foto_keluhan[]"]').files[0] 
-              ? await toBase64(group.querySelector('input[name="foto_keluhan[]"]').files[0]) 
-              : null,
-            foto_keluhan_name: group.querySelector('input[name="foto_keluhan[]"]').files[0]?.name || '',
-            perbaikan: [],
-            tanggal_perbaikan: [],
-            foto_perbaikan: [],
-            foto_perbaikan_names: []
+            keluhan: group.querySelector('textarea[name="keluhan"]').value,
+            tanggal_keluhan: group.querySelector('input[name="tanggal"]').value,
+            perbaikan: group.querySelector('textarea[name="perbaikan[]"]').value,
+            tanggal_perbaikan: group.querySelector('input[name="tanggal_perbaikan[]"]').value
           };
 
-          const perbaikanGroups = group.querySelectorAll('.perbaikan-group');
-          for (let j = 0; j < perbaikanGroups.length; j++) {
-            const perbaikanGroup = perbaikanGroups[j];
-            keluhanData.perbaikan.push(perbaikanGroup.querySelector(`textarea[name="perbaikan[${i}][]"]`).value);
-            keluhanData.tanggal_perbaikan.push(perbaikanGroup.querySelector(`input[name="tanggal_perbaikan[${i}][]"]`).value);
-            
-            const fotoFile = perbaikanGroup.querySelector(`input[name="foto_perbaikan[${i}][]"]`).files[0];
-            keluhanData.foto_perbaikan.push(fotoFile ? await toBase64(fotoFile) : null);
-            keluhanData.foto_perbaikan_names.push(fotoFile?.name || '');
+          // Proses foto keluhan
+          const fotoKeluhan = group.querySelector('input[name="foto_keluhan"]').files[0];
+          if (fotoKeluhan) {
+            keluhanData.foto_keluhan = await toBase64(fotoKeluhan);
+            keluhanData.foto_keluhan_name = fotoKeluhan.name;
           }
 
-          allData.push(keluhanData);
+          // Proses foto perbaikan
+          const fotoPerbaikan = group.querySelector('input[name="foto_perbaikan[]"]').files[0];
+          if (fotoPerbaikan) {
+            keluhanData.foto_perbaikan = await toBase64(fotoPerbaikan);
+            keluhanData.foto_perbaikan_name = fotoPerbaikan.name;
+          }
+
+          formData.keluhans.push(keluhanData);
         }
 
         // Kirim data ke server
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
-          body: JSON.stringify(allData),
+          body: JSON.stringify(formData),
           headers: {
             'Content-Type': 'text/plain'
           },
           mode: 'no-cors'
         });
 
-        showToast("Keluhan berhasil dikirim", "success");
+        showToast("Data keluhan berhasil dikirim", "success");
         setTimeout(() => {
           keluhanForm.reset();
-          // Reset ke 1 keluhan dengan 1 perbaikan
-          document.getElementById("keluhan-wrapper").innerHTML = `
-            <div class="keluhan-group border rounded p-3 mb-3 alert alert-primary">
-              <div class="mb-3">
-                <label class="form-label">Keluhan</label>
-                <textarea name="keluhan[]" class="form-control" rows="3" required></textarea>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Tanggal Keluhan</label>
-                <input type="date" name="tanggal_keluhan[]" class="form-control" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Foto Keluhan</label>
-                <input type="file" name="foto_keluhan[]" class="form-control" accept="image/*">
-              </div>
-              
-              <div class="perbaikan-wrapper">
-                <div class="perbaikan-group border rounded p-3 mb-3 bg-light">
-                  <div class="mb-2">
-                    <label>Deskripsi Perbaikan</label>
-                    <textarea name="perbaikan[0][]" class="form-control" rows="2" required></textarea>
-                  </div>
-                  <div class="mb-2">
-                    <label>Tanggal Perbaikan</label>
-                    <input type="date" name="tanggal_perbaikan[0][]" class="form-control" required>
-                  </div>
-                  <div class="mb-2">
-                    <label>Foto Perbaikan</label>
-                    <input type="file" name="foto_perbaikan[0][]" class="form-control" accept="image/*">
-                  </div>
-                  <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-perbaikan">Hapus Perbaikan</button>
-                </div>
-              </div>
-              
-              <button type="button" class="btn btn-sm btn-danger btn-hapus-keluhan">Hapus Keluhan</button>
-            </div>
-          `;
         }, 2000);
         
       } catch (err) {
@@ -211,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fungsi toBase64 tetap sama
+  // Fungsi untuk konversi file ke base64
   function toBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -220,5 +154,4 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.onerror = error => reject(error);
     });
   }
-  
 });
