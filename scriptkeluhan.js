@@ -76,25 +76,44 @@ document.addEventListener("DOMContentLoaded", () => {
     keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       
-      const formData = new FormData(keluhanForm);
-      const data = {};
-      
-      // Convert FormData to plain object
-      for (let [key, value] of formData.entries()) {
-        if (data[key]) {
-          if (!Array.isArray(data[key])) {
-            data[key] = [data[key]];
-          }
-          data[key].push(value);
-        } else {
-          data[key] = value;
-        }
-      }
+      // Tampilkan loading indicator
+      const submitBtn = keluhanForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Menyimpan...";
       
       try {
+        // Konversi file ke base64
+        const fotoKeluhan = document.getElementById('foto_keluhan').files[0];
+        const fotoKeluhanBase64 = fotoKeluhan ? await toBase64(fotoKeluhan) : null;
+        
+        // Konversi semua foto perbaikan
+        const fotoPerbaikanInputs = document.querySelectorAll('input[name="foto_perbaikan[]"]');
+        const fotoPerbaikanPromises = Array.from(fotoPerbaikanInputs).map(input => 
+          input.files[0] ? toBase64(input.files[0]) : Promise.resolve(null)
+        );
+        const fotoPerbaikanBase64 = await Promise.all(fotoPerbaikanPromises);
+        
+        // Siapkan data form
+        const formData = {
+          kebun: keluhanForm.kebun.value,
+          divisi: keluhanForm.divisi.value,
+          blok: keluhanForm.blok.value,
+          pemanen: keluhanForm.pemanen.value,
+          pp: keluhanForm.pp.value,
+          tanggal: keluhanForm.tanggal.value,
+          keluhan: keluhanForm.keluhan.value,
+          foto_keluhan: fotoKeluhanBase64,
+          foto_keluhan_name: fotoKeluhan?.name || '',
+          perbaikan: Array.from(document.querySelectorAll('textarea[name="perbaikan[]"]')).map(el => el.value),
+          tanggal_perbaikan: Array.from(document.querySelectorAll('input[name="tanggal_perbaikan[]"]')).map(el => el.value),
+          foto_perbaikan: fotoPerbaikanBase64,
+          foto_perbaikan_names: Array.from(fotoPerbaikanInputs).map(input => input.files[0]?.name || '')
+        };
+        
+        // Kirim data ke server
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
-          body: JSON.stringify(data),
+          body: JSON.stringify(formData),
           headers: {
             'Content-Type': 'application/json'
           }
@@ -105,7 +124,21 @@ document.addEventListener("DOMContentLoaded", () => {
         keluhanForm.reset();
       } catch (err) {
         showToast("Gagal menyimpan keluhan: " + err.message, "error");
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Simpan";
       }
+    });
+  }
+  
+  // Fungsi untuk konversi file ke base64
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = error => reject(error);
     });
   }
 });
