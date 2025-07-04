@@ -81,8 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.textContent = "Menyimpan...";
       
       try {
+        // Generate unique ID untuk kelompok data ini
+        const batchId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        
         // Siapkan data dasar
         const formData = {
+          batch_id: batchId, // ID unik untuk kelompok data ini
           kebun: keluhanForm.kebun.value,
           divisi: keluhanForm.divisi.value,
           blok: keluhanForm.blok.value,
@@ -90,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
           pp: keluhanForm.pp.value,
           keluhans: []
         };
-
+  
         // Proses setiap kelompok keluhan-perbaikan
         const groups = document.querySelectorAll('.perbaikan-group');
         
@@ -102,24 +106,24 @@ document.addEventListener("DOMContentLoaded", () => {
             perbaikan: group.querySelector('textarea[name="perbaikan[]"]').value,
             tanggal_perbaikan: group.querySelector('input[name="tanggal_perbaikan[]"]').value
           };
-
+  
           // Proses foto keluhan
           const fotoKeluhan = group.querySelector('input[name="foto_keluhan"]').files[0];
           if (fotoKeluhan) {
             keluhanData.foto_keluhan = await toBase64(fotoKeluhan);
             keluhanData.foto_keluhan_name = fotoKeluhan.name;
           }
-
+  
           // Proses foto perbaikan
           const fotoPerbaikan = group.querySelector('input[name="foto_perbaikan[]"]').files[0];
           if (fotoPerbaikan) {
             keluhanData.foto_perbaikan = await toBase64(fotoPerbaikan);
             keluhanData.foto_perbaikan_name = fotoPerbaikan.name;
           }
-
+  
           formData.keluhans.push(keluhanData);
         }
-
+  
         // Kirim data ke server
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
@@ -129,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           mode: 'no-cors'
         });
-
+  
         showToast("Data keluhan berhasil dikirim", "success");
         setTimeout(() => {
           keluhanForm.reset();
