@@ -138,16 +138,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
   // Fungsi untuk upload file ke Google Drive
-  async function uploadFile(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    
-    const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
-      method: "POST",
-      body: formData
-    });
-    
-    const result = await response.json();
-    return result.url || "";
-  }
-});
+async function uploadFile(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?action=upload", {
+    method: "POST",
+    body: formData
+  });
+  
+  const result = await response.json();
+  return result.url || "";
+}
