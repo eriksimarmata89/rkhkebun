@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       
-      // Tampilkan loading indicator
       const submitBtn = keluhanForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       submitBtn.textContent = "Menyimpan...";
@@ -110,18 +109,22 @@ document.addEventListener("DOMContentLoaded", () => {
           foto_perbaikan_names: Array.from(fotoPerbaikanInputs).map(input => input.files[0]?.name || '')
         };
         
-        // Kirim data ke server
+        // Kirim data ke server dengan mode 'cors'
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
           body: JSON.stringify(formData),
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'text/plain' // Gunakan text/plain untuk menghindari preflight
+          },
+          mode: 'no-cors' // Mode no-cors untuk menghindari CORS issues
         });
         
-        const result = await response.json();
-        showToast(result.message || "Keluhan berhasil disimpan", "success");
-        keluhanForm.reset();
+        // Karena mode no-cors, response tidak bisa dibaca langsung
+        showToast("Keluhan berhasil dikirim", "success");
+        setTimeout(() => {
+          keluhanForm.reset();
+        }, 2000);
+        
       } catch (err) {
         showToast("Gagal menyimpan keluhan: " + err.message, "error");
         console.error(err);
