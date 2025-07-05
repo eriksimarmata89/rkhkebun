@@ -294,7 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
-                console.log("Foto URL:", item.foto_keluhan);
                 const img = document.createElement("img");
                 const directUrl = convertToDirectImageUrl(item.foto_keluhan);
                 img.src = directUrl;
