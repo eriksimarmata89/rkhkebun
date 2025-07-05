@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Tentukan kelas dan teks status
             const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
-            const statusText = item.status || 'Unknown'; // Default jika status tidak ada
+            const statusText = item.status === 'Open' ? 'Open' : 'Close';
 
             tbody.innerHTML += `
               <tr>
