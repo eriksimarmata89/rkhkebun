@@ -1,11 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Inisialisasi modal dengan pengecekan keamanan
+  let detailModal;
+  try {
+    const modalElement = document.getElementById('detailModal');
+    if (modalElement) {
+      detailModal = new bootstrap.Modal(modalElement);
+    }
+  } catch (e) {
+    console.error("Gagal menginisialisasi modal:", e);
+  }
+  
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
   const toastIcon = toast?.querySelector(".toast-icon");
   const toastMessage = toast?.querySelector(".toast-message");
   const progressWrapper = document.getElementById("progress-wrapper");
   const progressBar = document.getElementById("progress-bar");
-  const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
 
   // Toast notification function
   function showToast(message, type = "success", onClick = null) {
