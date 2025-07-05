@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
           tbody.innerHTML = "";
 
           if (data.length === 0) {
-            tbody.innerHTML = <tr><td colspan="7" class="text-center">Tidak ada data ditemukan</td></tr>;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data ditemukan</td></tr>`;
             progressWrapper.style.display = "none";
             return;
           }
@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const statusText = item.status === 'Open' ? 'Open' : 'Close';
 
             tbody.innerHTML += 
-              <tr>
+              `<tr>
                 <td class="text-center">${tanggalFormatted}</td>
                 <td class="text-center">${item.kebun || "-"}</td>
                 <td class="text-center">${item.divisi || "-"}</td>
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   <button class="btn btn-sm btn-warning btn-action btn-edit" data-index="${index}">Edit</button>
                   <button class="btn btn-sm btn-danger btn-action btn-hapus" data-index="${index}">Hapus</button>
                 </td>
-              </tr>;
+              </tr>`;
           });
 
           setTimeout(() => {
