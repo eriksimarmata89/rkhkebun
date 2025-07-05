@@ -27,22 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch (e) {
     console.error("Failed to initialize modal:", e);
   }
-  
-  // Helper function to convert Google Drive URL to direct image URL
-  function convertToDirectImageUrl(url) {
-    if (!url) return null;
-    if (url.includes('uc?export=view')) return url;
-  
-    const match = url.match(/\/file\/d\/([^\/]+)\//) ||
-                  url.match(/id=([^&]+)/) ||
-                  url.match(/\/d\/([^\/?]+)/);
-  
-    if (match && match[1]) {
-      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-    }
-  
-    return url;
-  }
 
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
@@ -290,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
               
               if (item.foto_keluhan) {
                 const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+                console.log("Direct URL Keluhan:", directUrl);
                 const img = document.createElement("img");
                 img.src = directUrl;
                 img.alt = "Foto Keluhan";
@@ -307,7 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
               if (item.foto_perbaikan) {
                 const img = document.createElement("img");
                 const directUrl = convertToDirectImageUrl(item.foto_perbaikan);
-                console.log("Direct URL Keluhan:", directUrl);
                 img.src = directUrl;
                 img.alt = "Foto Perbaikan";
                 img.style.maxWidth = "100%";
@@ -335,6 +319,22 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             });
           });
+
+          // Helper function to convert Google Drive URL to direct image URL
+          function convertToDirectImageUrl(url) {
+            if (!url) return null;
+            if (url.includes('uc?export=view')) return url;
+          
+            const match = url.match(/\/file\/d\/([^\/]+)\//) ||
+                          url.match(/id=([^&]+)/) ||
+                          url.match(/\/d\/([^\/?]+)/);
+          
+            if (match && match[1]) {
+              return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+            }
+          
+            return url;
+          }
 
           // Edit button event
           document.querySelectorAll(".btn-edit").forEach(button => {
