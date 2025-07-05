@@ -28,6 +28,27 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Failed to initialize modal:", e);
   }
   
+  // Helper function to convert Google Drive URL to direct image URL
+  function convertToDirectImageUrl(url) {
+    if (!url) return null;
+    
+    // If already a direct URL, return as-is
+    if (url.includes('uc?export=view')) {
+      return url;
+    }
+    
+    // Extract file ID from various Google Drive URL formats
+    const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/) || 
+                       url.match(/id=([^&]+)/) || 
+                       url.match(/\/([^\/]{25,})/);
+    
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
+    
+    return url; // Return original if we can't convert
+  }
+
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
   const toastIcon = toast?.querySelector(".toast-icon");
@@ -268,49 +289,52 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-tanggal-perbaikan").textContent = 
                 item.tanggal_perbaikan ? new Date(item.tanggal_perbaikan).toLocaleDateString("id-ID") : "-";
               
-              // Set complaint photo
+              // Set complaint photo with improved handling
               const fotoKeluhanContainer = document.getElementById("detail-foto-keluhan");
               fotoKeluhanContainer.innerHTML = "";
+              
               if (item.foto_keluhan) {
                 const img = document.createElement("img");
-                img.src = item.foto_keluhan;
+                const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+                img.src = directUrl;
                 img.alt = "Foto Keluhan";
                 img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
+                img.style.objectFit = "contain";
                 img.onerror = () => {
-                  // Try to extract file ID and create direct URL
-                  const fileIdMatch = item.foto_keluhan.match(/\/file\/d\/([^\/]+)/) || 
-                                     item.foto_keluhan.match(/id=([^&]+)/);
-                  if (fileIdMatch && fileIdMatch[1]) {
-                    const directUrl = `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-                    img.src = directUrl;
-                  } else {
-                    fotoKeluhanContainer.textContent = "Gagal memuat foto keluhan";
-                  }
+                  fotoKeluhanContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                      Gagal memuat foto keluhan. 
+                      <a href="${item.foto_keluhan}" target="_blank" class="alert-link">
+                        Coba buka di tab baru
+                      </a>
+                    </div>`;
                 };
                 fotoKeluhanContainer.appendChild(img);
               } else {
                 fotoKeluhanContainer.textContent = "Tidak ada foto";
               }
-
+              
+              // Set repair photo with improved handling
               const fotoPerbaikanContainer = document.getElementById("detail-foto-perbaikan");
               fotoPerbaikanContainer.innerHTML = "";
+              
               if (item.foto_perbaikan) {
                 const img = document.createElement("img");
-                img.src = item.foto_perbaikan;
+                const directUrl = convertToDirectImageUrl(item.foto_perbaikan);
+                img.src = directUrl;
                 img.alt = "Foto Perbaikan";
                 img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
+                img.style.objectFit = "contain";
                 img.onerror = () => {
-                  // Try to extract file ID and create direct URL
-                  const fileIdMatch = item.foto_perbaikan.match(/\/file\/d\/([^\/]+)/) || 
-                                     item.foto_perbaikan.match(/id=([^&]+)/);
-                  if (fileIdMatch && fileIdMatch[1]) {
-                    const directUrl = `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-                    img.src = directUrl;
-                  } else {
-                    fotoPerbaikanContainer.textContent = "Gagal memuat foto perbaikan";
-                  }
+                  fotoPerbaikanContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                      Gagal memuat foto perbaikan. 
+                      <a href="${item.foto_perbaikan}" target="_blank" class="alert-link">
+                        Coba buka di tab baru
+                      </a>
+                    </div>`;
                 };
                 fotoPerbaikanContainer.appendChild(img);
               } else {
