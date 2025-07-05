@@ -31,22 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Helper function to convert Google Drive URL to direct image URL
   function convertToDirectImageUrl(url) {
     if (!url) return null;
-    
-    // If already a direct URL, return as-is
-    if (url.includes('uc?export=view')) {
-      return url;
+    if (url.includes('uc?export=view')) return url;
+  
+    const match = url.match(/\/file\/d\/([^\/]+)\//) ||
+                  url.match(/id=([^&]+)/) ||
+                  url.match(/\/d\/([^\/?]+)/);
+  
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
     }
-    
-    // Extract file ID from various Google Drive URL formats
-    const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/) || 
-                       url.match(/id=([^&]+)/) || 
-                       url.match(/\/([^\/]{25,})/);
-    
-    if (fileIdMatch && fileIdMatch[1]) {
-      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-    }
-    
-    return url; // Return original if we can't convert
+  
+    return url;
   }
 
   const keluhanForm = document.getElementById("form-keluhan");
@@ -289,27 +284,17 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-tanggal-perbaikan").textContent = 
                 item.tanggal_perbaikan ? new Date(item.tanggal_perbaikan).toLocaleDateString("id-ID") : "-";
               
-              // Set complaint photo with improved handling
+              // Set complaint photo
               const fotoKeluhanContainer = document.getElementById("detail-foto-keluhan");
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
-                const img = document.createElement("img");
                 const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+                const img = document.createElement("img");
                 img.src = directUrl;
                 img.alt = "Foto Keluhan";
-                img.style.maxWidth = "100%";
+                img.classList.add("img-fluid", "mb-2", "border");
                 img.style.maxHeight = "300px";
-                img.style.objectFit = "contain";
-                img.onerror = () => {
-                  fotoKeluhanContainer.innerHTML = `
-                    <div class="alert alert-warning">
-                      Gagal memuat foto keluhan. 
-                      <a href="${item.foto_keluhan}" target="_blank" class="alert-link">
-                        Coba buka di tab baru
-                      </a>
-                    </div>`;
-                };
                 fotoKeluhanContainer.appendChild(img);
               } else {
                 fotoKeluhanContainer.textContent = "Tidak ada foto";
