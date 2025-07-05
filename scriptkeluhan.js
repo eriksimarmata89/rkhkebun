@@ -30,27 +30,23 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Helper function to convert Google Drive URL to direct image URL
   function convertToDirectImageUrl(url) {
-  if (!url) return null;
-  
-  // Jika sudah URL langsung, kembalikan begitu saja
+    if (!url) return null;
+    
+    // If already a direct URL, return as-is
     if (url.includes('uc?export=view')) {
       return url;
     }
     
-    // Cek jika ini URL Google Drive yang bisa dikonversi
-    if (url.includes('drive.google.com')) {
-      // Format 1: https://drive.google.com/file/d/FILE_ID/view
-      // Format 2: https://drive.google.com/open?id=FILE_ID
-      const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/) || 
-                         url.match(/id=([^&]+)/) || 
-                         url.match(/\/([^\/]{25,})/);
-      
-      if (fileIdMatch && fileIdMatch[1]) {
-        return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-      }
+    // Extract file ID from various Google Drive URL formats
+    const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/) || 
+                       url.match(/id=([^&]+)/) || 
+                       url.match(/\/([^\/]{25,})/);
+    
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
     }
     
-    return url; // Kembalikan URL asli jika tidak bisa dikonversi
+    return url; // Return original if we can't convert
   }
 
   const keluhanForm = document.getElementById("form-keluhan");
@@ -298,50 +294,26 @@ document.addEventListener("DOMContentLoaded", () => {
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
-              const directUrl = convertToDirectImageUrl(item.foto_keluhan);
-              const cacheBusterUrl = `${directUrl}${directUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
-              img.src = cacheBusterUrl;
-              
-              const imgContainer = document.createElement("div");
-              imgContainer.style.margin = "10px 0";
-              
-              const img = document.createElement("img");
-              img.alt = "Foto Keluhan";
-              img.style.maxWidth = "100%";
-              img.style.maxHeight = "300px";
-              img.style.objectFit = "contain";
-              img.style.border = "1px solid #ddd";
-              img.style.borderRadius = "4px";
-              img.style.padding = "5px";
-              
-              // Add loading state
-              img.onloadstart = () => {
-                imgContainer.innerHTML = "<div class='text-muted'>Memuat gambar...</div>";
-              };
-              
-              img.onerror = () => {
-                // Try adding a timestamp to bypass cache
-                const cacheBusterUrl = `${directUrl}&t=${Date.now()}`;
-                
-                imgContainer.innerHTML = `
-                  <div class="alert alert-warning">
-                    Gagal memuat foto keluhan. 
-                    <a href="${directUrl}" target="_blank" class="alert-link">
-                      Coba buka di tab baru
-                    </a>
-                    <button class="btn btn-sm btn-secondary mt-2" onclick="
-                      this.parentElement.innerHTML = '<img src=\\'${cacheBusterUrl}\\' style=\\'max-width:100%;max-height:300px;object-fit:contain\\' onerror=\\'this.parentElement.innerHTML = \\\"Gagal memuat gambar setelah refresh\\\"\\' />';
-                    ">
-                      Coba Muat Ulang
-                    </button>
-                  </div>`;
-              };
-              
-              imgContainer.appendChild(img);
-              fotoKeluhanContainer.appendChild(imgContainer);
-            } else {
-              fotoKeluhanContainer.textContent = "Tidak ada foto";
-            }
+                const img = document.createElement("img");
+                const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+                img.src = directUrl;
+                img.alt = "Foto Keluhan";
+                img.style.maxWidth = "100%";
+                img.style.maxHeight = "300px";
+                img.style.objectFit = "contain";
+                img.onerror = () => {
+                  fotoKeluhanContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                      Gagal memuat foto keluhan. 
+                      <a href="${item.foto_keluhan}" target="_blank" class="alert-link">
+                        Coba buka di tab baru
+                      </a>
+                    </div>`;
+                };
+                fotoKeluhanContainer.appendChild(img);
+              } else {
+                fotoKeluhanContainer.textContent = "Tidak ada foto";
+              }
               
               // Set repair photo with improved handling
               const fotoPerbaikanContainer = document.getElementById("detail-foto-perbaikan");
