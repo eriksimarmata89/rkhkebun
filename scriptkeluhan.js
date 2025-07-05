@@ -192,8 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           data.forEach((item, index) => {
             const percent = Math.floor(((index + 1) / data.length) * 100);
-            progressBar.style.width = ${percent}%;
-            progressBar.textContent = ${percent}%;
+            progressBar.style.width = `${percent}%`;
+            progressBar.textContent = `${percent}%`;
             progressBar.setAttribute("aria-valuenow", percent);
             
             // Format date
