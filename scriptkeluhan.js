@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tanggalMulaiInput = document.getElementById("tanggalMulai");
   const tanggalAkhirInput = document.getElementById("tanggalAkhir");
   const tbody = document.querySelector("#tabel-laporan tbody");
-
+  
   if (btnCari && tbody) {
     btnCari.addEventListener("click", () => {
       const bulan = bulanInput.value;
@@ -268,58 +268,36 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-tanggal-perbaikan").textContent = 
                 item.tanggal_perbaikan ? new Date(item.tanggal_perbaikan).toLocaleDateString("id-ID") : "-";
               
-              // Set complaint photo
+              // Set complaint photo using iframe
               const fotoKeluhanContainer = document.getElementById("detail-foto-keluhan");
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
-                console.log("item.foto_keluhan:", item.foto_keluhan);
-                const directUrl = convertToDirectImageUrl(item.foto_keluhan);
-                console.log("Direct URL Keluhan:", directUrl);
-                const img = document.createElement("img");
-                img.onerror = () => {
-                  console.warn("Gagal memuat gambar keluhan:", directUrl);
-                  fotoKeluhanContainer.innerHTML = 
-                    <div class="alert alert-warning">
-                      Gagal memuat foto keluhan. 
-                      <a href="${directUrl}" target="_blank" class="alert-link">Buka di tab baru</a>
-                    </div>;
-                };
-                img.src = directUrl;
-                img.alt = "Foto Keluhan";
-                img.classList.add("img-fluid", "mb-2", "border");
-                img.style.maxWidth = "100%";
-                img.style.maxHeight = "300px";
-                img.style.objectFit = "contain";
-                img.style.display = "block";
-                fotoKeluhanContainer.appendChild(img);
+                const embedUrl = convertToDriveEmbedUrl(item.foto_keluhan);
+                const iframe = document.createElement("iframe");
+                iframe.src = embedUrl;
+                iframe.style.width = "100%";
+                iframe.style.height = "400px";
+                iframe.frameBorder = "0";
+                iframe.allowFullscreen = true;
+                fotoKeluhanContainer.appendChild(iframe);
               } else {
                 fotoKeluhanContainer.textContent = "Tidak ada foto";
               }
               
-              // Set repair photo with improved handling
+              // Set repair photo using iframe
               const fotoPerbaikanContainer = document.getElementById("detail-foto-perbaikan");
               fotoPerbaikanContainer.innerHTML = "";
               
               if (item.foto_perbaikan) {
-                const img = document.createElement("img");
-                const directUrl = convertToDirectImageUrl(item.foto_perbaikan);
-                img.src = directUrl;
-                img.alt = "Foto Perbaikan";
-                img.style.maxWidth = "100%";
-                img.style.maxHeight = "300px";
-                img.style.objectFit = "contain";
-                img.style.display = "block";
-                img.onerror = () => {
-                  fotoPerbaikanContainer.innerHTML = 
-                    <div class="alert alert-warning">
-                      Gagal memuat foto perbaikan. 
-                      <a href="${item.foto_perbaikan}" target="_blank" class="alert-link">
-                        Coba buka di tab baru
-                      </a>
-                    </div>;
-                };
-                fotoPerbaikanContainer.appendChild(img);
+                const embedUrl = convertToDriveEmbedUrl(item.foto_perbaikan);
+                const iframe = document.createElement("iframe");
+                iframe.src = embedUrl;
+                iframe.style.width = "100%";
+                iframe.style.height = "400px";
+                iframe.frameBorder = "0";
+                iframe.allowFullscreen = true;
+                fotoPerbaikanContainer.appendChild(iframe);
               } else {
                 fotoPerbaikanContainer.textContent = "Tidak ada foto";
               }
@@ -333,18 +311,14 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           });
 
-           // Helper function to convert Google Drive URL to direct image URL
-          function convertToDirectImageUrl(url) {
-            if (!url) return null;
-            if (url.includes('uc?export=view')) return url;
-          
-            const match = url.match(/\/file\/d\/([^\/]+)\//) ||
-                          url.match(/id=([^&]+)/) ||
-                          url.match(/\/d\/([^\/?]+)/);
-          
+          function convertToDriveEmbedUrl(url) {
+            if (!url) return '';
+            const match = url.match(/\/file\/d\/([^\/]+)/) || url.match(/id=([^&]+)/);
             if (match && match[1]) {
-              return https://drive.google.com/uc?export=view&id=${match[1]};
+              return `https://drive.google.com/file/d/${match[1]}/preview`;
             }
+            return url;
+          }
 
           // Edit button event
           document.querySelectorAll(".btn-edit").forEach(button => {
