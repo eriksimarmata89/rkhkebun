@@ -336,14 +336,11 @@ document.addEventListener("DOMContentLoaded", () => {
           // Helper function to convert Google Drive URL to direct image URL
           function convertToDirectImageUrl(url) {
             if (!url) return null;
-            if (url.includes('uc?export=view')) return url;
           
-            const match = url.match(/\/file\/d\/([^\/]+)\//) ||
-                          url.match(/id=([^&]+)/) ||
-                          url.match(/\/d\/([^\/?]+)/);
-          
+            const match = url.match(/id=([^&]+)/) || url.match(/\/d\/([^\/]+)/);
             if (match && match[1]) {
-              return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+              const id = match[1];
+              return `https://drive.google.com/thumbnail?id=${id}`;
             }
           
             return url;
