@@ -298,45 +298,49 @@ document.addEventListener("DOMContentLoaded", () => {
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
-                const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+              const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+              
+              const imgContainer = document.createElement("div");
+              imgContainer.style.margin = "10px 0";
+              
+              const img = document.createElement("img");
+              img.src = directUrl;
+              img.alt = "Foto Keluhan";
+              img.style.maxWidth = "100%";
+              img.style.maxHeight = "300px";
+              img.style.objectFit = "contain";
+              img.style.border = "1px solid #ddd";
+              img.style.borderRadius = "4px";
+              img.style.padding = "5px";
+              
+              // Add loading state
+              img.onloadstart = () => {
+                imgContainer.innerHTML = "<div class='text-muted'>Memuat gambar...</div>";
+              };
+              
+              img.onerror = () => {
+                // Try adding a timestamp to bypass cache
+                const cacheBusterUrl = `${directUrl}&t=${Date.now()}`;
                 
-                const imgContainer = document.createElement("div");
-                imgContainer.style.margin = "10px 0";
-                
-                const img = document.createElement("img");
-                img.src = directUrl;
-                img.alt = "Foto Keluhan";
-                img.style.maxWidth = "100%";
-                img.style.maxHeight = "300px";
-                img.style.objectFit = "contain";
-                img.style.border = "1px solid #ddd";
-                img.style.borderRadius = "4px";
-                img.style.padding = "5px";
-                
-                const link = document.createElement("a");
-                link.href = directUrl;
-                link.target = "_blank";
-                link.textContent = "Buka di tab baru";
-                link.style.display = "block";
-                link.style.marginTop = "5px";
-                link.style.fontSize = "0.8em";
-                
-                img.onerror = () => {
-                  imgContainer.innerHTML = `
-                    <div class="alert alert-warning">
-                      Gagal memuat foto keluhan. 
-                      <a href="${directUrl}" target="_blank" class="alert-link">
-                        Coba buka di tab baru
-                      </a>
-                    </div>`;
-                };
-                
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(link);
-                fotoKeluhanContainer.appendChild(imgContainer);
-              } else {
-                fotoKeluhanContainer.textContent = "Tidak ada foto";
-              }
+                imgContainer.innerHTML = `
+                  <div class="alert alert-warning">
+                    Gagal memuat foto keluhan. 
+                    <a href="${directUrl}" target="_blank" class="alert-link">
+                      Coba buka di tab baru
+                    </a>
+                    <button class="btn btn-sm btn-secondary mt-2" onclick="
+                      this.parentElement.innerHTML = '<img src=\\'${cacheBusterUrl}\\' style=\\'max-width:100%;max-height:300px;object-fit:contain\\' onerror=\\'this.parentElement.innerHTML = \\\"Gagal memuat gambar setelah refresh\\\"\\' />';
+                    ">
+                      Coba Muat Ulang
+                    </button>
+                  </div>`;
+              };
+              
+              imgContainer.appendChild(img);
+              fotoKeluhanContainer.appendChild(imgContainer);
+            } else {
+              fotoKeluhanContainer.textContent = "Tidak ada foto";
+            }
               
               // Set repair photo with improved handling
               const fotoPerbaikanContainer = document.getElementById("detail-foto-perbaikan");
