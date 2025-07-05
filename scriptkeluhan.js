@@ -294,6 +294,17 @@ document.addEventListener("DOMContentLoaded", () => {
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
+                console.log("Foto URL:", item.foto_keluhan);
+                console.log("Foto accessible:", await testImage(item.foto_keluhan));
+                
+                async function testImage(url) {
+                  return new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => resolve(true);
+                    img.onerror = () => resolve(false);
+                    img.src = url;
+                  });
+                }
                 const img = document.createElement("img");
                 const directUrl = convertToDirectImageUrl(item.foto_keluhan);
                 img.src = directUrl;
