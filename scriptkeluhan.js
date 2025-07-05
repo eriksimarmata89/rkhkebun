@@ -234,6 +234,10 @@ document.addEventListener("DOMContentLoaded", () => {
               ? item.keluhan.substring(0, 50) + "..." 
               : item.keluhan;
 
+            // Tentukan kelas dan teks status
+            const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
+            const statusText = item.status || 'Unknown'; // Default jika status tidak ada
+
             tbody.innerHTML += `
               <tr>
                 <td class="text-center">${tanggalFormatted}</td>
