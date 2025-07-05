@@ -277,6 +277,13 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-blok").textContent = item.blok || "-";
               document.getElementById("detail-pemanen").textContent = item.pemanen || "-";
               document.getElementById("detail-pp").textContent = item.pp || "-";
+              
+              // Tampilkan status dengan badge
+              const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
+              const statusElement = document.getElementById("detail-status");
+              statusElement.textContent = item.status;
+              statusElement.className = `badge badge-status ${statusClass}`;
+              
               document.getElementById("detail-keluhan").textContent = item.keluhan || "-";
               document.getElementById("detail-perbaikan").textContent = item.perbaikan || "-";
               document.getElementById("detail-tanggal-perbaikan").textContent = 
