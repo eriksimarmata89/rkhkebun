@@ -33,3 +33,21 @@
   opacity: 0;
   visibility: hidden;
 }
+/* Tambahkan di stylelaporankeluhan.css */
+.badge-status {
+  font-size: 0.9em;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge-open {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-close {
+  background-color: #28a745;
+  color: white;
+}
