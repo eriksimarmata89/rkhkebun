@@ -279,7 +279,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 img.src = directUrl;
                 img.alt = "Foto Keluhan";
                 img.classList.add("img-fluid", "mb-2", "border");
+                img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
+                img.style.objectFit = "contain";
+                img.style.display = "block";
                 fotoKeluhanContainer.appendChild(img);
               } else {
                 fotoKeluhanContainer.textContent = "Tidak ada foto";
@@ -297,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
                 img.style.objectFit = "contain";
+                img.style.display = "block";
                 img.onerror = () => {
                   fotoPerbaikanContainer.innerHTML = `
                     <div class="alert alert-warning">
