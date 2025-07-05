@@ -273,9 +273,18 @@ document.addEventListener("DOMContentLoaded", () => {
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
+                console.log("item.foto_keluhan:", item.foto_keluhan);
                 const directUrl = convertToDirectImageUrl(item.foto_keluhan);
                 console.log("Direct URL Keluhan:", directUrl);
                 const img = document.createElement("img");
+                img.onerror = () => {
+                  console.warn("Gagal memuat gambar keluhan:", directUrl);
+                  fotoKeluhanContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                      Gagal memuat foto keluhan. 
+                      <a href="${directUrl}" target="_blank" class="alert-link">Buka di tab baru</a>
+                    </div>`;
+                };
                 img.src = directUrl;
                 img.alt = "Foto Keluhan";
                 img.classList.add("img-fluid", "mb-2", "border");
