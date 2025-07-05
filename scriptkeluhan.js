@@ -164,14 +164,14 @@ document.addEventListener("DOMContentLoaded", () => {
       let url = "";
 
       if (mulai && akhir && !bulan) {
-        url = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?tanggal_mulai=${mulai}&tanggal_akhir=${akhir}`;
+        url = https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?tanggal_mulai=${mulai}&tanggal_akhir=${akhir};
       } else if (bulan && !mulai && !akhir) {
-        url = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?bulan=${bulan}`;
+        url = https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?bulan=${bulan};
       } else if (!bulan && (!mulai || !akhir)) {
         showToast("Silakan pilih bulan atau rentang tanggal dengan lengkap", "error");
         return;
       } else {
-        url = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?tanggal_mulai=${mulai}&tanggal_akhir=${akhir}`;
+        url = https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?tanggal_mulai=${mulai}&tanggal_akhir=${akhir};
       }
 
       progressWrapper.style.display = "block";
@@ -185,15 +185,15 @@ document.addEventListener("DOMContentLoaded", () => {
           tbody.innerHTML = "";
 
           if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data ditemukan</td></tr>`;
+            tbody.innerHTML = <tr><td colspan="7" class="text-center">Tidak ada data ditemukan</td></tr>;
             progressWrapper.style.display = "none";
             return;
           }
 
           data.forEach((item, index) => {
             const percent = Math.floor(((index + 1) / data.length) * 100);
-            progressBar.style.width = `${percent}%`;
-            progressBar.textContent = `${percent}%`;
+            progressBar.style.width = ${percent}%;
+            progressBar.textContent = ${percent}%;
             progressBar.setAttribute("aria-valuenow", percent);
             
             // Format date
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
             const statusText = item.status === 'Open' ? 'Open' : 'Close';
 
-            tbody.innerHTML += `
+            tbody.innerHTML += 
               <tr>
                 <td class="text-center">${tanggalFormatted}</td>
                 <td class="text-center">${item.kebun || "-"}</td>
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   <button class="btn btn-sm btn-warning btn-action btn-edit" data-index="${index}">Edit</button>
                   <button class="btn btn-sm btn-danger btn-action btn-hapus" data-index="${index}">Hapus</button>
                 </td>
-              </tr>`;
+              </tr>;
           });
 
           setTimeout(() => {
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
               const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
               const statusElement = document.getElementById("detail-status");
               statusElement.textContent = item.status || 'Open';
-              statusElement.className = `badge badge-status ${statusClass}`;
+              statusElement.className = badge badge-status ${statusClass};
               
               document.getElementById("detail-keluhan").textContent = item.keluhan || "-";
               document.getElementById("detail-perbaikan").textContent = item.perbaikan || "-";
@@ -279,11 +279,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const img = document.createElement("img");
                 img.onerror = () => {
                   console.warn("Gagal memuat gambar keluhan:", directUrl);
-                  fotoKeluhanContainer.innerHTML = `
+                  fotoKeluhanContainer.innerHTML = 
                     <div class="alert alert-warning">
                       Gagal memuat foto keluhan. 
                       <a href="${directUrl}" target="_blank" class="alert-link">Buka di tab baru</a>
-                    </div>`;
+                    </div>;
                 };
                 img.src = directUrl;
                 img.alt = "Foto Keluhan";
@@ -311,13 +311,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 img.style.objectFit = "contain";
                 img.style.display = "block";
                 img.onerror = () => {
-                  fotoPerbaikanContainer.innerHTML = `
+                  fotoPerbaikanContainer.innerHTML = 
                     <div class="alert alert-warning">
                       Gagal memuat foto perbaikan. 
                       <a href="${item.foto_perbaikan}" target="_blank" class="alert-link">
                         Coba buka di tab baru
                       </a>
-                    </div>`;
+                    </div>;
                 };
                 fotoPerbaikanContainer.appendChild(img);
               } else {
@@ -333,17 +333,18 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           });
 
+           // Helper function to convert Google Drive URL to direct image URL
           function convertToDirectImageUrl(url) {
             if (!url) return null;
+            if (url.includes('uc?export=view')) return url;
           
-            const match = url.match(/id=([^&]+)/) || url.match(/\/d\/([^\/]+)/);
+            const match = url.match(/\/file\/d\/([^\/]+)\//) ||
+                          url.match(/id=([^&]+)/) ||
+                          url.match(/\/d\/([^\/?]+)/);
+          
             if (match && match[1]) {
-              const id = match[1];
-              return `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?doGetImage=true&id=${id}`;
+              return https://drive.google.com/uc?export=view&id=${match[1]};
             }
-          
-            return url;
-          }
 
           // Edit button event
           document.querySelectorAll(".btn-edit").forEach(button => {
@@ -363,11 +364,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 let hapusUrl = "";
 
                 if (mulai && akhir && (!bulan || bulan === "")) {
-                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index}`;
+                  hapusUrl = https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index};
                 } else if (bulan && (!mulai || !akhir)) {
-                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus=${bulan}&index=${index}`;
+                  hapusUrl = https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus=${bulan}&index=${index};
                 } else {
-                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index}`;
+                  hapusUrl = https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index};
                 }
 
                 fetch(hapusUrl)
