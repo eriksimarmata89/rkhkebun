@@ -121,56 +121,36 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <strong>Tanggal:</strong> <span id="detail-tanggal"></span>
+          <div class="info-row">
+            <div class="info-box"><span class="info-label">Tanggal:</span> <span id="detail-tanggal"></span></div>
+            <div class="info-box"><span class="info-label">Kebun:</span> <span id="detail-kebun"></span></div>
+            <div class="info-box"><span class="info-label">Divisi:</span> <span id="detail-divisi"></span></div>
+            <div class="info-box"><span class="info-label">Blok:</span> <span id="detail-blok"></span></div>
+            <div class="info-box"><span class="info-label">Pemanen:</span> <span id="detail-pemanen"></span></div>
+            <div class="info-box"><span class="info-label">PP:</span> <span id="detail-pp"></span></div>
+            <div class="info-box"><span class="info-label">Status:</span> <span id="detail-status" class="badge badge-status"></span></div>
+            <div class="info-box" style="flex: 1 1 100%;">
+              <span class="info-label">Keluhan:</span>
+              <p id="detail-keluhan" class="mt-2 mb-1"></p>
             </div>
-            <div class="col-md-6">
-              <strong>Kebun:</strong> <span id="detail-kebun"></span>
+            <div class="info-box" style="flex: 1 1 100%;">
+              <span class="info-label">Perbaikan:</span>
+              <p id="detail-perbaikan" class="mt-2 mb-1"></p>
             </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <strong>Divisi:</strong> <span id="detail-divisi"></span>
-            </div>
-            <div class="col-md-6">
-              <strong>Blok:</strong> <span id="detail-blok"></span>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <strong>Pemanen:</strong> <span id="detail-pemanen"></span>
-            </div>
-            <div class="col-md-6">
-              <strong>PP:</strong> <span id="detail-pp"></span>
+            <div class="info-box">
+              <span class="info-label">Tanggal Perbaikan:</span>
+              <span id="detail-tanggal-perbaikan"></span>
             </div>
           </div>
-          <div class="mb-3">
-            <strong>Keluhan:</strong>
-            <p id="detail-keluhan" class="mt-2"></p>
+        
+          <div class="photo-card">
+            <div class="card-title">Foto Keluhan</div>
+            <div id="detail-foto-keluhan"></div>
           </div>
-          <div class="mb-3">
-            <strong>Foto Keluhan:</strong>
-            <div id="detail-foto-keluhan" class="mt-2"></div>
-          </div>
-          <div class="mb-3">
-            <strong>Perbaikan:</strong>
-            <p id="detail-perbaikan" class="mt-2"></p>
-          </div>
-          <div class="mb-3">
-            <strong>Tanggal Perbaikan:</strong>
-            <span id="detail-tanggal-perbaikan"></span>
-          </div>
-          <div class="mb-3">
-            <strong>Foto Perbaikan:</strong>
-            <div id="detail-foto-perbaikan" class="mt-2"></div>
-          </div>
-          <!-- Di dalam detailModal -->
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <strong>Status:</strong>
-              <span id="detail-status" class="badge badge-status"></span>
-            </div>
+        
+          <div class="photo-card">
+            <div class="card-title">Foto Perbaikan</div>
+            <div id="detail-foto-perbaikan"></div>
           </div>
         </div>
         <div class="modal-footer">
