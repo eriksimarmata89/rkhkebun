@@ -242,6 +242,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td class="text-center">${item.blok || "-"}</td>
                 <td>${keluhanShort}</td>
                 <td class="text-center">
+                  <span class="badge badge-status ${statusClass}">${statusText}</span>
+                </td>
+                <td class="text-center">
                   <button class="btn btn-sm btn-info btn-action btn-lihat" data-index="${index}">Lihat</button>
                   <button class="btn btn-sm btn-warning btn-action btn-edit" data-index="${index}">Edit</button>
                   <button class="btn btn-sm btn-danger btn-action btn-hapus" data-index="${index}">Hapus</button>
