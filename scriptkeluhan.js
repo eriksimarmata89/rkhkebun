@@ -1,13 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Inisialisasi modal dengan pengecekan keamanan
-  let detailModal;
+  // Initialize modal with safety checks
+  let detailModal = null;
+  
   try {
     const modalElement = document.getElementById('detailModal');
     if (modalElement) {
-      detailModal = new bootstrap.Modal(modalElement);
+      // Check if Bootstrap is available
+      if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        detailModal = new bootstrap.Modal(modalElement);
+      } else {
+        console.warn("Bootstrap is not loaded. Using fallback modal.");
+        // Simple fallback modal implementation
+        modalElement.style.display = 'none';
+        const closeBtn = modalElement.querySelector('.btn-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            modalElement.style.display = 'none';
+          });
+        }
+        detailModal = {
+          show: () => modalElement.style.display = 'block',
+          hide: () => modalElement.style.display = 'none'
+        };
+      }
     }
   } catch (e) {
-    console.error("Gagal menginisialisasi modal:", e);
+    console.error("Failed to initialize modal:", e);
   }
   
   const keluhanForm = document.getElementById("form-keluhan");
@@ -41,49 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // === TAMBAH INPUT KELUHAN DAN PERBAIKAN ===
-  document.getElementById("btn-tambah")?.addEventListener("click", () => {
-    const wrapper = document.getElementById("perbaikan-wrapper");
-    const lastGroup = wrapper?.querySelector(".perbaikan-group:last-child");
-
-    if (!lastGroup) {
-      showToast("Tidak ada entri yang bisa digandakan!", "error");
-      return;
-    }
-
-    const clone = lastGroup.cloneNode(true);
-    clone.querySelectorAll("input").forEach(input => input.value = "");
-    clone.querySelectorAll("textarea").forEach(textarea => textarea.value = "");
-
-    const alertClasses = [
-      ["alert", "alert-primary"],
-      ["alert", "alert-success"],
-      ["alert", "alert-info"],
-      ["alert", "alert-danger"],
-      ["alert", "alert-warning"]
-    ];
-
-    clone.classList.remove("alert", "alert-primary", "alert-success", "alert-info", "alert-danger", "alert-warning");
-
-    const allGroups = wrapper.querySelectorAll(".perbaikan-group");
-    const colorIndex = allGroups.length % alertClasses.length;
-    clone.classList.add(...alertClasses[colorIndex]);
-
-    wrapper.appendChild(clone);
-  });
-
-  // === HAPUS INPUT KELUHAN DAN PERBAIKAN ===
-  document.getElementById("perbaikan-wrapper")?.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-hapus-input")) {
-      const group = e.target.closest(".perbaikan-group");
-      if (document.querySelectorAll(".perbaikan-group").length > 1) {
-        group.remove();
-      } else {
-        showToast("Minimal 1 keluhan dan perbaikan harus ada", "error");
-      }
-    }
-  });
-
   // === SUBMIT FORM ===
   if (keluhanForm) {
     keluhanForm.addEventListener("submit", async function(e) {
@@ -94,10 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.textContent = "Menyimpan...";
       
       try {
-        // Generate unique ID untuk kelompok data ini
+        // Generate unique ID for this data batch
         const batchId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
         
-        // Siapkan data dasar
+        // Prepare base data
         const formData = {
           batch_id: batchId,
           kebun: keluhanForm.kebun.value,
@@ -105,11 +80,11 @@ document.addEventListener("DOMContentLoaded", () => {
           blok: keluhanForm.blok.value,
           pemanen: keluhanForm.pemanen.value,
           pp: keluhanForm.pp.value,
-          status: document.getElementById('status').value, // 'keluhan' atau 'perbaikan'
+          status: document.getElementById('status').value,
           keluhans: []
         };
   
-        // Proses setiap kelompok keluhan
+        // Process each complaint group
         const groups = document.querySelectorAll('.perbaikan-group');
         
         for (let i = 0; i < groups.length; i++) {
@@ -121,14 +96,14 @@ document.addEventListener("DOMContentLoaded", () => {
             tanggal_perbaikan: group.querySelector('input[name="tanggal_perbaikan[]"]').value || null
           };
   
-          // Proses foto keluhan
+          // Process complaint photo
           const fotoKeluhan = group.querySelector('input[name="foto_keluhan"]').files[0];
           if (fotoKeluhan) {
             keluhanData.foto_keluhan = await toBase64(fotoKeluhan);
             keluhanData.foto_keluhan_name = fotoKeluhan.name;
           }
   
-          // Proses foto perbaikan (jika ada)
+          // Process repair photo (if exists)
           const fotoPerbaikan = group.querySelector('input[name="foto_perbaikan[]"]').files[0];
           if (fotoPerbaikan) {
             keluhanData.foto_perbaikan = await toBase64(fotoPerbaikan);
@@ -138,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
           formData.keluhans.push(keluhanData);
         }
   
-        // Kirim data ke server
+        // Send data to server
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
           body: JSON.stringify(formData),
@@ -163,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fungsi untuk konversi file ke base64
+  // Function to convert file to base64
   function toBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -173,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ==== LAPORAN KELUHAN ====
+  // === COMPLAINT REPORT ===
   const btnCari = document.getElementById("btn-cari");
   const bulanInput = document.getElementById("bulan");
   const tanggalMulaiInput = document.getElementById("tanggalMulai");
@@ -210,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
           tbody.innerHTML = "";
 
           if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center">Tidak ada data ditemukan</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Tidak ada data ditemukan</td></tr>`;
             progressWrapper.style.display = "none";
             return;
           }
@@ -221,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
             progressBar.textContent = `${percent}%`;
             progressBar.setAttribute("aria-valuenow", percent);
             
-            // Format tanggal
+            // Format date
             const tanggal = new Date(item.tanggal);
             const tanggalFormatted = tanggal.toLocaleDateString("id-ID", {
               day: "numeric",
@@ -229,12 +204,12 @@ document.addEventListener("DOMContentLoaded", () => {
               year: "numeric"
             });
 
-            // Potong teks keluhan jika terlalu panjang
+            // Shorten complaint text if too long
             const keluhanShort = item.keluhan.length > 50 
               ? item.keluhan.substring(0, 50) + "..." 
               : item.keluhan;
 
-            // Tentukan kelas dan teks status
+            // Determine status class and text
             const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
             const statusText = item.status === 'Open' ? 'Open' : 'Close';
 
@@ -260,13 +235,13 @@ document.addEventListener("DOMContentLoaded", () => {
             progressWrapper.style.display = "none";
           }, 400);
 
-          // Event untuk tombol Lihat
+          // View button event
           document.querySelectorAll(".btn-lihat").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
               const item = data[index];
               
-              // Format tanggal
+              // Format date
               const tanggal = new Date(item.tanggal);
               const tanggalFormatted = tanggal.toLocaleDateString("id-ID", {
                 day: "numeric",
@@ -274,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 year: "numeric"
               });
               
-              // Set data ke modal
+              // Set data to modal
               document.getElementById("detail-tanggal").textContent = tanggalFormatted;
               document.getElementById("detail-kebun").textContent = item.kebun || "-";
               document.getElementById("detail-divisi").textContent = item.divisi || "-";
@@ -282,10 +257,10 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-pemanen").textContent = item.pemanen || "-";
               document.getElementById("detail-pp").textContent = item.pp || "-";
               
-              // Tampilkan status dengan badge
+              // Show status with badge
               const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
               const statusElement = document.getElementById("detail-status");
-              statusElement.textContent = item.status;
+              statusElement.textContent = item.status || 'Open';
               statusElement.className = `badge badge-status ${statusClass}`;
               
               document.getElementById("detail-keluhan").textContent = item.keluhan || "-";
@@ -293,50 +268,71 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-tanggal-perbaikan").textContent = 
                 item.tanggal_perbaikan ? new Date(item.tanggal_perbaikan).toLocaleDateString("id-ID") : "-";
               
-              // Set foto keluhan
+              // Set complaint photo
               const fotoKeluhanContainer = document.getElementById("detail-foto-keluhan");
               fotoKeluhanContainer.innerHTML = "";
               if (item.foto_keluhan) {
                 const img = document.createElement("img");
-                img.src = item.foto_keluhan;
+                // Convert view URL to direct URL if needed
+                let imgUrl = item.foto_keluhan;
+                if (imgUrl.includes('/file/d/')) {
+                  const fileId = imgUrl.match(/\/file\/d\/([^\/]+)/)[1];
+                  imgUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+                }
+                img.src = imgUrl;
                 img.alt = "Foto Keluhan";
                 img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
+                img.onerror = () => {
+                  fotoKeluhanContainer.textContent = "Gagal memuat foto keluhan";
+                };
                 fotoKeluhanContainer.appendChild(img);
               } else {
                 fotoKeluhanContainer.textContent = "Tidak ada foto";
               }
               
-              // Set foto perbaikan
+              // Set repair photo
               const fotoPerbaikanContainer = document.getElementById("detail-foto-perbaikan");
               fotoPerbaikanContainer.innerHTML = "";
               if (item.foto_perbaikan) {
                 const img = document.createElement("img");
-                img.src = item.foto_perbaikan;
+                // Convert view URL to direct URL if needed
+                let imgUrl = item.foto_perbaikan;
+                if (imgUrl.includes('/file/d/')) {
+                  const fileId = imgUrl.match(/\/file\/d\/([^\/]+)/)[1];
+                  imgUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+                }
+                img.src = imgUrl;
                 img.alt = "Foto Perbaikan";
                 img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
+                img.onerror = () => {
+                  fotoPerbaikanContainer.textContent = "Gagal memuat foto perbaikan";
+                };
                 fotoPerbaikanContainer.appendChild(img);
               } else {
                 fotoPerbaikanContainer.textContent = "Tidak ada foto";
               }
               
-              // Tampilkan modal
-              detailModal.show();
+              // Show modal
+              if (detailModal) {
+                detailModal.show();
+              } else {
+                console.error("Modal not initialized");
+              }
             });
           });
 
-          // Event untuk tombol Edit
+          // Edit button event
           document.querySelectorAll(".btn-edit").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
               const item = data[index];
               showToast("Fitur edit akan segera tersedia", "info");
-              // Implementasi edit bisa ditambahkan di sini
             });
           });
 
-          // Event untuk tombol Hapus
+          // Delete button event
           document.querySelectorAll(".btn-hapus").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
