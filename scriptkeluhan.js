@@ -33,25 +33,25 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!url) return null;
   
   // Jika sudah URL langsung, kembalikan begitu saja
-  if (url.includes('uc?export=view')) {
-    return url;
-  }
-  
-  // Cek jika ini URL Google Drive yang bisa dikonversi
-  if (url.includes('drive.google.com')) {
-    // Format 1: https://drive.google.com/file/d/FILE_ID/view
-    // Format 2: https://drive.google.com/open?id=FILE_ID
-    const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/) || 
-                       url.match(/id=([^&]+)/) || 
-                       url.match(/\/([^\/]{25,})/);
-    
-    if (fileIdMatch && fileIdMatch[1]) {
-      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    if (url.includes('uc?export=view')) {
+      return url;
     }
+    
+    // Cek jika ini URL Google Drive yang bisa dikonversi
+    if (url.includes('drive.google.com')) {
+      // Format 1: https://drive.google.com/file/d/FILE_ID/view
+      // Format 2: https://drive.google.com/open?id=FILE_ID
+      const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/) || 
+                         url.match(/id=([^&]+)/) || 
+                         url.match(/\/([^\/]{25,})/);
+      
+      if (fileIdMatch && fileIdMatch[1]) {
+        return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+      }
+    }
+    
+    return url; // Kembalikan URL asli jika tidak bisa dikonversi
   }
-  
-  return url; // Kembalikan URL asli jika tidak bisa dikonversi
-}
 
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
