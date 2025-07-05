@@ -307,6 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
               if (item.foto_perbaikan) {
                 const img = document.createElement("img");
                 const directUrl = convertToDirectImageUrl(item.foto_perbaikan);
+                console.log("Direct URL Keluhan:", directUrl);
                 img.src = directUrl;
                 img.alt = "Foto Perbaikan";
                 img.style.maxWidth = "100%";
