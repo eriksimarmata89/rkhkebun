@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
               const statusClass = item.status === 'Open' ? 'badge-open' : 'badge-close';
               const statusElement = document.getElementById("detail-status");
               statusElement.textContent = item.status || 'Open';
-              statusElement.className = badge badge-status ${statusClass};
+              statusElement.className = `badge badge-status ${statusClass}`;
               
               document.getElementById("detail-keluhan").textContent = item.keluhan || "-";
               document.getElementById("detail-perbaikan").textContent = item.perbaikan || "-";
