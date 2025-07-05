@@ -298,23 +298,42 @@ document.addEventListener("DOMContentLoaded", () => {
               fotoKeluhanContainer.innerHTML = "";
               
               if (item.foto_keluhan) {
-                const img = document.createElement("img");
                 const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+                
+                const imgContainer = document.createElement("div");
+                imgContainer.style.margin = "10px 0";
+                
+                const img = document.createElement("img");
                 img.src = directUrl;
                 img.alt = "Foto Keluhan";
                 img.style.maxWidth = "100%";
                 img.style.maxHeight = "300px";
                 img.style.objectFit = "contain";
+                img.style.border = "1px solid #ddd";
+                img.style.borderRadius = "4px";
+                img.style.padding = "5px";
+                
+                const link = document.createElement("a");
+                link.href = directUrl;
+                link.target = "_blank";
+                link.textContent = "Buka di tab baru";
+                link.style.display = "block";
+                link.style.marginTop = "5px";
+                link.style.fontSize = "0.8em";
+                
                 img.onerror = () => {
-                  fotoKeluhanContainer.innerHTML = `
+                  imgContainer.innerHTML = `
                     <div class="alert alert-warning">
                       Gagal memuat foto keluhan. 
-                      <a href="${item.foto_keluhan}" target="_blank" class="alert-link">
+                      <a href="${directUrl}" target="_blank" class="alert-link">
                         Coba buka di tab baru
                       </a>
                     </div>`;
                 };
-                fotoKeluhanContainer.appendChild(img);
+                
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(link);
+                fotoKeluhanContainer.appendChild(imgContainer);
               } else {
                 fotoKeluhanContainer.textContent = "Tidak ada foto";
               }
