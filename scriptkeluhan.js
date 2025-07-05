@@ -299,12 +299,13 @@ document.addEventListener("DOMContentLoaded", () => {
               
               if (item.foto_keluhan) {
               const directUrl = convertToDirectImageUrl(item.foto_keluhan);
+              const cacheBusterUrl = `${directUrl}${directUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+              img.src = cacheBusterUrl;
               
               const imgContainer = document.createElement("div");
               imgContainer.style.margin = "10px 0";
               
               const img = document.createElement("img");
-              img.src = directUrl;
               img.alt = "Foto Keluhan";
               img.style.maxWidth = "100%";
               img.style.maxHeight = "300px";
