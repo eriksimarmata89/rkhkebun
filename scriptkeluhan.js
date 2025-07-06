@@ -72,6 +72,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Event untuk tombol hapus pada grup pertama
+  document.querySelectorAll('.btn-hapus-input').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const group = e.target.closest('.perbaikan-group');
+      if (group && document.querySelectorAll('.perbaikan-group').length > 1) {
+        group.remove();
+      } else {
+        showToast("Minimal 1 permasalahan harus ada", "warning");
+      }
+    });
+  });
+
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
   const toastIcon = toast?.querySelector(".toast-icon");
