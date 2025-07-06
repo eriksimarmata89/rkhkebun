@@ -567,19 +567,27 @@ async function checkDriveSpace() {
     const data = await response.json();
     
     if (data) {
+      // Tambahkan warna peringatan jika penggunaan > 70%
+      const warningClass = parseFloat(data.usedPercent) > 70 ? 'text-danger fw-bold' : '';
+      
       driveSpace.innerHTML = `
         <strong>Penyimpanan Google Drive:</strong><br>
         Total: ${data.quotaGB} GB | 
         Terpakai: ${data.usedGB} GB (${data.usedPercent}%) | 
         Sisa: ${data.remainingGB} GB
         <div class="progress mt-2" style="height: 20px;">
-          <div class="progress-bar" role="progressbar" 
+          <div class="progress-bar ${parseFloat(data.usedPercent) > 70 ? 'bg-warning' : ''}" 
+               role="progressbar" 
                style="width: ${data.usedPercent}%" 
                aria-valuenow="${data.usedPercent}" 
                aria-valuemin="0" 
                aria-valuemax="100">
             ${data.usedPercent}%
           </div>
+        </div>
+        <div class="mt-2 ${warningClass}">
+          <i class="fas fa-exclamation-triangle me-1"></i>
+          Penyimpanan terbatas, mohon diantisipasi, hapus data yang tidak perlu
         </div>
       `;
     } else {
