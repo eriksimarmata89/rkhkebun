@@ -349,38 +349,36 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("detail-tanggal-perbaikan").textContent = 
                 item.tanggal_perbaikan ? new Date(item.tanggal_perbaikan).toLocaleDateString("id-ID") : "-";
               
-              // Set complaint photo using iframe
+              // Set complaint photo
               const fotoKeluhanContainer = document.getElementById("detail-foto-keluhan");
-              fotoKeluhanContainer.innerHTML = "";
+              fotoKeluhanContainer.innerHTML = '<div class="photo-placeholder">Tidak ada foto keluhan</div>';
               
               if (item.foto_keluhan) {
                 const embedUrl = convertToDriveEmbedUrl(item.foto_keluhan);
                 const iframe = document.createElement("iframe");
                 iframe.src = embedUrl;
                 iframe.style.width = "100%";
-                iframe.style.height = "400px";
+                iframe.style.height = "100%";
                 iframe.frameBorder = "0";
                 iframe.allowFullscreen = true;
+                fotoKeluhanContainer.innerHTML = '';
                 fotoKeluhanContainer.appendChild(iframe);
-              } else {
-                fotoKeluhanContainer.textContent = "Tidak ada foto";
               }
               
-              // Set repair photo using iframe
+              // Set repair photo
               const fotoPerbaikanContainer = document.getElementById("detail-foto-perbaikan");
-              fotoPerbaikanContainer.innerHTML = "";
+              fotoPerbaikanContainer.innerHTML = '<div class="photo-placeholder">Belum ada foto perbaikan</div>';
               
               if (item.foto_perbaikan) {
                 const embedUrl = convertToDriveEmbedUrl(item.foto_perbaikan);
                 const iframe = document.createElement("iframe");
                 iframe.src = embedUrl;
                 iframe.style.width = "100%";
-                iframe.style.height = "400px";
+                iframe.style.height = "100%";
                 iframe.frameBorder = "0";
                 iframe.allowFullscreen = true;
+                fotoPerbaikanContainer.innerHTML = '';
                 fotoPerbaikanContainer.appendChild(iframe);
-              } else {
-                fotoPerbaikanContainer.textContent = "Tidak ada foto";
               }
               
               // Show modal
