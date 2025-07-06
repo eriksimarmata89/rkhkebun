@@ -16,6 +16,7 @@
   z-index: 9999;
 }
 .toast.show {
+  visibility: visible;
   opacity: 1;
   transform: translateY(0);
 }
