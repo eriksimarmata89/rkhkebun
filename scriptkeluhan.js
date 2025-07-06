@@ -380,11 +380,14 @@ document.addEventListener("DOMContentLoaded", () => {
               const fotoKeluhanPreview = document.getElementById("edit-foto-keluhan-preview");
               fotoKeluhanPreview.innerHTML = "";
               if (item.foto_keluhan) {
-                const img = document.createElement("img");
-                img.src = item.foto_keluhan;
-                img.style.maxWidth = "100%";
-                img.style.maxHeight = "200px";
-                fotoKeluhanPreview.appendChild(img);
+                const embedUrl = convertToDriveEmbedUrl(item.foto_keluhan);
+                const iframe = document.createElement("iframe");
+                iframe.src = embedUrl;
+                iframe.style.width = "100%";
+                iframe.style.height = "400px";
+                iframe.frameBorder = "0";
+                iframe.allowFullscreen = true;
+                fotoKeluhanPreview.appendChild(iframe);
               } else {
                 fotoKeluhanPreview.textContent = "Tidak ada foto keluhan";
               }
