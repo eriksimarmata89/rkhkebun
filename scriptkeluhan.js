@@ -63,30 +63,35 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-tambah")?.addEventListener("click", () => {
     const wrapper = document.getElementById("perbaikan-wrapper");
     const lastGroup = wrapper?.querySelector(".perbaikan-group:last-child");
-
+  
     if (!lastGroup) {
       showToast("Tidak ada entri yang bisa digandakan!", "error");
       return;
     }
-
+  
+    // Validasi foto keluhan di grup terakhir sebelum menambah baru
+    const fotoKeluhan = lastGroup.querySelector('input[name="foto_keluhan"]');
+    if (!fotoKeluhan.files || fotoKeluhan.files.length === 0) {
+      showToast("Harap isi foto keluhan terlebih dahulu", "error");
+      fotoKeluhan.classList.add('is-invalid');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'invalid-feedback';
+      errorDiv.textContent = 'Foto keluhan wajib diisi';
+      fotoKeluhan.parentNode.appendChild(errorDiv);
+      return;
+    }
+  
+    // Lanjutkan dengan cloning jika validasi berhasil
     const clone = lastGroup.cloneNode(true);
     clone.querySelectorAll("input").forEach(input => input.value = "");
     clone.querySelectorAll("textarea").forEach(textarea => textarea.value = "");
-
-    const alertClasses = [
-      ["alert", "alert-primary"],
-      ["alert", "alert-success"],
-      ["alert", "alert-info"],
-      ["alert", "alert-danger"],
-      ["alert", "alert-warning"]
-    ];
-
-    clone.classList.remove("alert", "alert-primary", "alert-success", "alert-info", "alert-danger", "alert-warning");
-
-    const allGroups = wrapper.querySelectorAll(".perbaikan-group");
-    const colorIndex = allGroups.length % alertClasses.length;
-    clone.classList.add(...alertClasses[colorIndex]);
-
+    
+    // Hapus class invalid jika ada
+    clone.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    clone.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+    
+    // ... (kode styling warna grup yang sudah ada)
+    
     wrapper.appendChild(clone);
   });
 
@@ -107,6 +112,33 @@ document.addEventListener("DOMContentLoaded", () => {
     keluhanForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       
+      // Validasi foto keluhan di setiap grup
+      const groups = document.querySelectorAll('.perbaikan-group');
+      let isValid = true;
+      
+      groups.forEach((group, index) => {
+        const fotoKeluhan = group.querySelector('input[name="foto_keluhan"]');
+        if (!fotoKeluhan.files || fotoKeluhan.files.length === 0) {
+          isValid = false;
+          // Tambahkan class error dan pesan
+          fotoKeluhan.classList.add('is-invalid');
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'invalid-feedback';
+          errorDiv.textContent = 'Foto keluhan wajib diisi';
+          fotoKeluhan.parentNode.appendChild(errorDiv);
+          
+          // Scroll ke grup yang error
+          if (index === 0) {
+            group.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      });
+      
+      if (!isValid) {
+        showToast("Harap lengkapi semua foto keluhan", "error");
+        return;
+      }
+      
       const submitBtn = keluhanForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       submitBtn.textContent = "Menyimpan...";
@@ -123,13 +155,10 @@ document.addEventListener("DOMContentLoaded", () => {
           blok: keluhanForm.blok.value,
           pemanen: keluhanForm.pemanen.value,
           pp: keluhanForm.pp.value,
-          // Hapus status dari sini, karena akan ditentukan di server
           keluhans: []
         };
   
         // Process each complaint group
-        const groups = document.querySelectorAll('.perbaikan-group');
-        
         for (let i = 0; i < groups.length; i++) {
           const group = groups[i];
           const keluhanData = {
@@ -139,14 +168,12 @@ document.addEventListener("DOMContentLoaded", () => {
             tanggal_perbaikan: group.querySelector('input[name="tanggal_perbaikan[]"]').value || null
           };
   
-          // Process complaint photo
+          // Process complaint photo (wajib ada)
           const fotoKeluhan = group.querySelector('input[name="foto_keluhan"]').files[0];
-          if (fotoKeluhan) {
-            keluhanData.foto_keluhan = await toBase64(fotoKeluhan);
-            keluhanData.foto_keluhan_name = fotoKeluhan.name;
-          }
+          keluhanData.foto_keluhan = await toBase64(fotoKeluhan);
+          keluhanData.foto_keluhan_name = fotoKeluhan.name;
   
-          // Process repair photo (if exists)
+          // Process repair photo (optional)
           const fotoPerbaikan = group.querySelector('input[name="foto_perbaikan[]"]').files[0];
           if (fotoPerbaikan) {
             keluhanData.foto_perbaikan = await toBase64(fotoPerbaikan);
