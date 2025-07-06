@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
           blok: keluhanForm.blok.value,
           pemanen: keluhanForm.pemanen.value,
           pp: keluhanForm.pp.value,
-          status: document.getElementById('status').value,
+          // Hapus status dari sini, karena akan ditentukan di server
           keluhans: []
         };
   
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
           formData.keluhans.push(keluhanData);
         }
   
-        // Send data to server
+        // Kirim data ke server
         const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
           method: "POST",
           body: JSON.stringify(formData),
