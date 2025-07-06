@@ -38,26 +38,47 @@ document.addEventListener("DOMContentLoaded", () => {
   // Toast notification function
   function showToast(message, type = "success", onClick = null) {
     if (!toast) return;
-
+  
+    // Set isi dan tampilan awal
     toastMessage.textContent = message;
     toastIcon.textContent = type === "success" ? "✔️" : type === "error" ? "❌" : "⚠️";
     toast.className = "toast show " + type;
-
+  
+    let hideTimeout = null;
+  
+    // Fungsi untuk menyembunyikan toast
+    const hideToast = () => {
+      toast.classList.add("hide");
+      setTimeout(() => {
+        toast.className = "toast " + type;
+      }, 400);
+      document.removeEventListener("click", handleOutsideClick);
+      clearTimeout(hideTimeout);
+    };
+  
+    // Jika ada fungsi onClick, jalankan ketika toast diklik
     if (onClick) {
       toast.onclick = () => {
-        toast.classList.remove("show");
+        hideToast();
         onClick();
         toast.onclick = null;
       };
     } else {
-      setTimeout(() => {
-        toast.classList.add("hide");
-        setTimeout(() => {
-          toast.className = "toast " + type;
-        }, 400);
-      }, 4000);
+      // Auto-hide setelah 60 detik
+      hideTimeout = setTimeout(() => {
+        hideToast();
+      }, 60000);
+  
+      // Tutup jika klik di luar toast
+      const handleOutsideClick = (event) => {
+        if (!toast.contains(event.target)) {
+          hideToast();
+        }
+      };
+      document.addEventListener("click", handleOutsideClick);
     }
   }
+
 
   // === TAMBAH INPUT KELUHAN DAN PERBAIKAN ===
   document.getElementById("btn-tambah")?.addEventListener("click", () => {
