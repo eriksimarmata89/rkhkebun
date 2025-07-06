@@ -363,13 +363,87 @@ document.addEventListener("DOMContentLoaded", () => {
             return url;
           }
 
-          // Edit button event
+          // Edit button event - Ganti yang lama dengan ini
           document.querySelectorAll(".btn-edit").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
               const item = data[index];
-              showToast("Fitur edit akan segera tersedia", "info");
+              
+              // Isi form edit dengan data yang ada
+              document.getElementById("edit-id").value = item.timestamp; // Gunakan timestamp sebagai ID unik
+              document.getElementById("edit-keluhan").value = item.keluhan;
+              document.getElementById("edit-tanggal-keluhan").value = item.tanggal;
+              document.getElementById("edit-perbaikan").value = item.perbaikan || "";
+              document.getElementById("edit-tanggal-perbaikan").value = item.tanggal_perbaikan || "";
+              
+              // Tampilkan foto keluhan yang sudah ada
+              const fotoKeluhanPreview = document.getElementById("edit-foto-keluhan-preview");
+              fotoKeluhanPreview.innerHTML = "";
+              if (item.foto_keluhan) {
+                const img = document.createElement("img");
+                img.src = item.foto_keluhan;
+                img.style.maxWidth = "100%";
+                img.style.maxHeight = "200px";
+                fotoKeluhanPreview.appendChild(img);
+              } else {
+                fotoKeluhanPreview.textContent = "Tidak ada foto keluhan";
+              }
+              
+              // Tampilkan modal edit
+              const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+              editModal.show();
             });
+          });
+          
+          // Handle submit form edit
+          document.getElementById("form-edit").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Menyimpan...";
+            
+            try {
+              const formData = new FormData(this);
+              const fotoPerbaikan = document.getElementById("edit-foto-perbaikan").files[0];
+              
+              // Siapkan data untuk dikirim ke server
+              const dataToSend = {
+                id: formData.get("id"),
+                perbaikan: formData.get("perbaikan"),
+                tanggal_perbaikan: formData.get("tanggal_perbaikan"),
+                status: "perbaikan" // Flag khusus untuk update perbaikan
+              };
+              
+              // Jika ada foto perbaikan baru, konversi ke base64
+              if (fotoPerbaikan) {
+                dataToSend.foto_perbaikan = await toBase64(fotoPerbaikan);
+                dataToSend.foto_perbaikan_name = fotoPerbaikan.name;
+              }
+              
+              // Kirim ke server
+              const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
+                method: "POST",
+                body: JSON.stringify(dataToSend),
+                headers: {
+                  'Content-Type': 'text/plain'
+                },
+                mode: 'no-cors'
+              });
+              
+              showToast("Data perbaikan berhasil disimpan", "success");
+              
+              // Tutup modal dan refresh data
+              bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+              btnCari.click();
+              
+            } catch (err) {
+              showToast("Gagal menyimpan perbaikan: " + err.message, "error");
+              console.error(err);
+            } finally {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Simpan Perbaikan";
+            }
           });
 
           // Delete button event
