@@ -28,62 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Failed to initialize modal:", e);
   }
 
-  // Tambah grup perbaikan baru
-  const btnTambah = document.getElementById("btn-tambah");
-  const wrapper = document.getElementById("perbaikan-wrapper");
-  
-  btnTambah.addEventListener("click", () => {
-    const newGroup = document.createElement("div");
-    newGroup.className = "perbaikan-group border rounded p-3 mb-3 alert alert-primary";
-    newGroup.innerHTML = `
-      <div class="mb-2">
-        <label for="keluhan" class="form-label">Keluhan Pemanen</label>
-        <textarea class="form-control" name="keluhan" rows="3" required></textarea>
-      </div>
-      <div class="mb-2">
-        <label for="tanggal" class="form-label">Tanggal Keluhan</label>
-        <input type="date" class="form-control" name="tanggal" required>
-      </div>
-      <div class="mb-2">
-        <label for="foto_keluhan" class="form-label">Foto Keluhan</label>
-        <input type="file" class="form-control" name="foto_keluhan" accept="image/*" capture="environment">
-      </div>
-      <input type="hidden" name="status" value="Open">
-      <div class="mb-2">
-        <label>Deskripsi Perbaikan</label>
-        <textarea name="perbaikan[]" class="form-control" rows="2"></textarea>
-      </div>
-      <div class="mb-2">
-        <label>Tanggal Perbaikan</label>
-        <input type="date" name="tanggal_perbaikan[]" class="form-control">
-      </div>
-      <div class="mb-2">
-        <label>Foto Perbaikan</label>
-        <input type="file" name="foto_perbaikan[]" class="form-control" accept="image/*" capture="environment">
-      </div>
-      <button type="button" class="btn btn-danger btn-hapus-input">Hapus Permasalahan dan Perbaikan</button>
-    `;
-  
-    wrapper.appendChild(newGroup);
-  
-    // Tambahkan event hapus juga agar grup baru bisa dihapus
-    newGroup.querySelector('.btn-hapus-input').addEventListener('click', () => {
-      wrapper.removeChild(newGroup);
-    });
-  });
-
-  // Event untuk tombol hapus pada grup pertama
-  document.querySelectorAll('.btn-hapus-input').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const group = e.target.closest('.perbaikan-group');
-      if (group && document.querySelectorAll('.perbaikan-group').length > 1) {
-        group.remove();
-      } else {
-        showToast("Minimal 1 permasalahan harus ada", "warning");
-      }
-    });
-  });
-
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
   const toastIcon = toast?.querySelector(".toast-icon");
@@ -114,6 +58,49 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 4000);
     }
   }
+
+  // === TAMBAH INPUT KELUHAN DAN PERBAIKAN ===
+  document.getElementById("btn-tambah")?.addEventListener("click", () => {
+    const wrapper = document.getElementById("perbaikan-wrapper");
+    const lastGroup = wrapper?.querySelector(".perbaikan-group:last-child");
+
+    if (!lastGroup) {
+      showToast("Tidak ada entri yang bisa digandakan!", "error");
+      return;
+    }
+
+    const clone = lastGroup.cloneNode(true);
+    clone.querySelectorAll("input").forEach(input => input.value = "");
+    clone.querySelectorAll("textarea").forEach(textarea => textarea.value = "");
+
+    const alertClasses = [
+      ["alert", "alert-primary"],
+      ["alert", "alert-success"],
+      ["alert", "alert-info"],
+      ["alert", "alert-danger"],
+      ["alert", "alert-warning"]
+    ];
+
+    clone.classList.remove("alert", "alert-primary", "alert-success", "alert-info", "alert-danger", "alert-warning");
+
+    const allGroups = wrapper.querySelectorAll(".perbaikan-group");
+    const colorIndex = allGroups.length % alertClasses.length;
+    clone.classList.add(...alertClasses[colorIndex]);
+
+    wrapper.appendChild(clone);
+  });
+
+  // === HAPUS INPUT KELUHAN DAN PERBAIKAN ===
+  document.getElementById("perbaikan-wrapper")?.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-hapus-input")) {
+      const group = e.target.closest(".perbaikan-group");
+      if (document.querySelectorAll(".perbaikan-group").length > 1) {
+        group.remove();
+      } else {
+        showToast("Minimal 1 keluhan dan perbaikan harus ada", "error");
+      }
+    }
+  });
 
   // === SUBMIT FORM ===
   if (keluhanForm) {
