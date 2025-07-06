@@ -38,12 +38,6 @@
   display: inline-block;
   margin-right: 10px;
 }
-.toast::after {
-  content: "Klik di luar untuk menutup";
-  font-size: 0.75rem;
-  color: #ccc;
-  margin-left: auto;
-}
 .modal-body .info-row {
     display: flex;
     flex-wrap: wrap;
