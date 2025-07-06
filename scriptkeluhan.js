@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
                 <td class="text-center">
                   <button class="btn btn-sm btn-info btn-action btn-lihat" data-index="${index}">Lihat</button>
-                  <button class="btn btn-sm btn-warning btn-action btn-edit" data-index="${index}">Edit</button>
+                  <button class="btn btn-sm btn-warning btn-action btn-edit" data-index="${index}">Update Perbaikan</button>
                   <button class="btn btn-sm btn-danger btn-action btn-hapus" data-index="${index}">Hapus</button>
                 </td>
               </tr>`;
