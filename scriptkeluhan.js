@@ -403,28 +403,40 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             
             const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
             submitBtn.textContent = "Menyimpan...";
+            
+            // Tambahkan flag untuk mencegah multiple submit
+            if (this.isSubmitting) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+              return;
+            }
+            this.isSubmitting = true;
             
             try {
               const formData = new FormData(this);
               const fotoPerbaikan = document.getElementById("edit-foto-perbaikan").files[0];
               
-              // Siapkan data untuk dikirim ke server
               const dataToSend = {
                 id: formData.get("id"),
                 perbaikan: formData.get("perbaikan"),
                 tanggal_perbaikan: formData.get("tanggal_perbaikan"),
-                status: "perbaikan" // Flag khusus untuk update perbaikan
+                status: "perbaikan"
               };
               
-              // Jika ada foto perbaikan baru, konversi ke base64
               if (fotoPerbaikan) {
+                // Validasi ukuran file (max 5MB)
+                if (fotoPerbaikan.size > 5 * 1024 * 1024) {
+                  throw new Error("Ukuran file terlalu besar. Maksimal 5MB");
+                }
+                
                 dataToSend.foto_perbaikan = await toBase64(fotoPerbaikan);
                 dataToSend.foto_perbaikan_name = fotoPerbaikan.name;
               }
               
-              // Kirim ke server
+              // Kirim data hanya sekali
               const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec", {
                 method: "POST",
                 body: JSON.stringify(dataToSend),
@@ -435,8 +447,6 @@ document.addEventListener("DOMContentLoaded", () => {
               });
               
               showToast("Data perbaikan berhasil disimpan", "success");
-              
-              // Tutup modal dan refresh data
               bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
               btnCari.click();
               
@@ -444,8 +454,9 @@ document.addEventListener("DOMContentLoaded", () => {
               showToast("Gagal menyimpan perbaikan: " + err.message, "error");
               console.error(err);
             } finally {
+              this.isSubmitting = false;
               submitBtn.disabled = false;
-              submitBtn.textContent = "Simpan Perbaikan";
+              submitBtn.textContent = originalText;
             }
           });
 
