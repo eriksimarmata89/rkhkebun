@@ -160,6 +160,59 @@
     </div>
   </div>
 
+  <!-- Modal untuk Edit Keluhan -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Keluhan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="form-edit">
+            <input type="hidden" id="edit-id" name="id">
+            
+            <div class="mb-3">
+              <label class="form-label">Keluhan</label>
+              <textarea class="form-control" id="edit-keluhan" name="keluhan" rows="3" readonly></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Tanggal Keluhan</label>
+              <input type="date" class="form-control" id="edit-tanggal-keluhan" name="tanggal_keluhan" readonly>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Foto Keluhan Saat Ini</label>
+              <div id="edit-foto-keluhan-preview" class="mb-2"></div>
+            </div>
+            
+            <hr>
+            
+            <h5>Data Perbaikan</h5>
+            
+            <div class="mb-3">
+              <label class="form-label">Deskripsi Perbaikan</label>
+              <textarea class="form-control" id="edit-perbaikan" name="perbaikan" rows="3"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Tanggal Perbaikan</label>
+              <input type="date" class="form-control" id="edit-tanggal-perbaikan" name="tanggal_perbaikan">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Foto Perbaikan</label>
+              <input type="file" class="form-control" id="edit-foto-perbaikan" name="foto_perbaikan" accept="image/*">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Simpan Perbaikan</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast">
     <div class="toast-icon">✔️</div>
     <div class="toast-message">Notifikasi</div>
