@@ -6,6 +6,7 @@
   <title>Laporan Keluhan</title>
   <link href="bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="stylelaporankeluhan.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
     body {
       padding-top: 50px;
@@ -81,42 +82,99 @@
   <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Detail Keluhan</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Detail Keluhan Pemanen</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="info-row">
-            <div class="info-box"><span class="info-label">Tanggal:</span> <span id="detail-tanggal"></span></div>
-            <div class="info-box"><span class="info-label">Kebun:</span> <span id="detail-kebun"></span></div>
-            <div class="info-box"><span class="info-label">Divisi:</span> <span id="detail-divisi"></span></div>
-            <div class="info-box"><span class="info-label">Blok:</span> <span id="detail-blok"></span></div>
-            <div class="info-box"><span class="info-label">Pemanen:</span> <span id="detail-pemanen"></span></div>
-            <div class="info-box"><span class="info-label">PP:</span> <span id="detail-pp"></span></div>
-            <div class="info-box"><span class="info-label">Status:</span> <span id="detail-status" class="badge badge-status"></span></div>
-            <div class="info-box" style="flex: 1 1 100%;">
-              <span class="info-label">Keluhan:</span>
-              <p id="detail-keluhan" class="mt-2 mb-1"></p>
+          
+          <!-- Card 1: Informasi Utama -->
+          <div class="modal-detail-card">
+            <div class="modal-detail-header">
+              <i class="fas fa-info-circle me-2"></i>Informasi Utama
             </div>
-            <div class="info-box" style="flex: 1 1 100%;">
-              <span class="info-label">Perbaikan:</span>
-              <p id="detail-perbaikan" class="mt-2 mb-1"></p>
-            </div>
-            <div class="info-box">
-              <span class="info-label">Tanggal Perbaikan:</span>
-              <span id="detail-tanggal-perbaikan"></span>
+            <div class="modal-detail-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Tanggal</span>
+                  <span class="info-value" id="detail-tanggal">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Kebun</span>
+                  <span class="info-value" id="detail-kebun">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Divisi</span>
+                  <span class="info-value" id="detail-divisi">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Blok</span>
+                  <span class="info-value" id="detail-blok">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Pemanen</span>
+                  <span class="info-value" id="detail-pemanen">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">PP</span>
+                  <span class="info-value" id="detail-pp">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Status</span>
+                  <span id="detail-status" class="badge badge-status">-</span>
+                </div>
+              </div>
             </div>
           </div>
-        
-          <div class="photo-card">
-            <div class="card-title">Foto Keluhan</div>
-            <div id="detail-foto-keluhan"></div>
+          
+          <!-- Card 2: Keluhan -->
+          <div class="modal-detail-card">
+            <div class="modal-detail-header">
+              <i class="fas fa-exclamation-triangle me-2"></i>Keluhan
+            </div>
+            <div class="modal-detail-body">
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <div class="photo-container" id="detail-foto-keluhan">
+                    <div class="photo-placeholder">Tidak ada foto keluhan</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <span class="info-label">Deskripsi Keluhan</span>
+                    <p class="info-value" id="detail-keluhan" style="white-space: pre-line;">-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        
-          <div class="photo-card">
-            <div class="card-title">Foto Perbaikan</div>
-            <div id="detail-foto-perbaikan"></div>
+          
+          <!-- Card 3: Perbaikan -->
+          <div class="modal-detail-card">
+            <div class="modal-detail-header">
+              <i class="fas fa-tools me-2"></i>Perbaikan
+            </div>
+            <div class="modal-detail-body">
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <div class="photo-container" id="detail-foto-perbaikan">
+                    <div class="photo-placeholder">Tidak ada foto perbaikan</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item mb-3">
+                    <span class="info-label">Deskripsi Perbaikan</span>
+                    <p class="info-value" id="detail-perbaikan" style="white-space: pre-line;">-</p>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Tanggal Perbaikan</span>
+                    <span class="info-value" id="detail-tanggal-perbaikan">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
