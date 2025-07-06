@@ -227,6 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
   if (btnCari && tbody) {
     btnCari.addEventListener("click", () => {
+      // Panggil fungsi pengecekan kapasitas
+      checkDriveSpace();
       const bulan = bulanInput.value;
       let mulai = tanggalMulaiInput.value;
       let akhir = tanggalAkhirInput.value;
@@ -532,3 +534,56 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// Fungsi untuk memformat ukuran penyimpanan
+function formatStorageSize(bytes) {
+  const GB = 1024 * 1024 * 1024;
+  const MB = 1024 * 1024;
+  const KB = 1024;
+  
+  if (bytes >= GB) {
+    return (bytes / GB).toFixed(2) + ' GB';
+  } else if (bytes >= MB) {
+    return (bytes / MB).toFixed(2) + ' MB';
+  } else if (bytes >= KB) {
+    return (bytes / KB).toFixed(2) + ' KB';
+  }
+  return bytes + ' bytes';
+}
+
+// Fungsi untuk mengambil info penyimpanan
+async function checkDriveSpace() {
+  try {
+    const driveInfo = document.getElementById('drive-info');
+    const driveSpace = document.getElementById('drive-space');
+    
+    driveInfo.style.display = 'block';
+    driveSpace.textContent = 'Mengambil informasi penyimpanan...';
+    
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?getDriveUsage=1");
+    const data = await response.json();
+    
+    if (data) {
+      driveSpace.innerHTML = `
+        <strong>Penyimpanan Google Drive:</strong><br>
+        Total: ${data.quotaGB} GB | 
+        Terpakai: ${data.usedGB} GB (${data.usedPercent}%) | 
+        Sisa: ${data.remainingGB} GB
+        <div class="progress mt-2" style="height: 20px;">
+          <div class="progress-bar" role="progressbar" 
+               style="width: ${data.usedPercent}%" 
+               aria-valuenow="${data.usedPercent}" 
+               aria-valuemin="0" 
+               aria-valuemax="100">
+            ${data.usedPercent}%
+          </div>
+        </div>
+      `;
+    } else {
+      driveSpace.textContent = 'Gagal memuat informasi penyimpanan';
+    }
+  } catch (err) {
+    console.error("Error checking drive space:", err);
+    document.getElementById('drive-space').textContent = 'Error memuat informasi penyimpanan';
+  }
+}
