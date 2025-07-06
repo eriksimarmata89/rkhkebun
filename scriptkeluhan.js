@@ -496,22 +496,32 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
 
-          // Delete button event
+          // Ganti seluruh bagian btn-hapus event listener dengan ini:
           document.querySelectorAll(".btn-hapus").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
+              const bulan = bulanInput.value;
+              const mulai = tanggalMulaiInput.value;
+              const akhir = tanggalAkhirInput.value;
               
               showToast("Tekan disini untuk konfirmasi hapus data", "confirm", () => {
                 let hapusUrl = "";
-
-                if (mulai && akhir && (!bulan || bulan === "")) {
-                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index}`;
-                } else if (bulan && (!mulai || !akhir)) {
-                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus=${bulan}&index=${index}`;
+                let params = new URLSearchParams();
+                
+                params.append('index', index);
+                
+                if (mulai && akhir && !bulan) {
+                  params.append('tanggal_mulai', mulai);
+                  params.append('tanggal_akhir', akhir);
+                } else if (bulan && !mulai && !akhir) {
+                  params.append('bulan', bulan);
                 } else {
-                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index}`;
+                  // Default ke semua data jika tidak ada filter
+                  params.append('hapus_semua', '1');
                 }
-
+                
+                hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?${params.toString()}`;
+                
                 fetch(hapusUrl)
                   .then(res => res.text())
                   .then(msg => {
