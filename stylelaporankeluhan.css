@@ -123,5 +123,17 @@
   background-color: #28a745;
   color: #fff;
 }
+/* Style untuk info penyimpanan */
+#drive-info {
+  border-left: 5px solid #17a2b8;
+}
 
+#drive-info .progress {
+  background-color: #e9ecef;
+}
+
+#drive-info .progress-bar {
+  background-color: #17a2b8;
+  transition: width 0.6s ease;
+}
   
