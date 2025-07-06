@@ -1,24 +1,32 @@
 .toast {
   visibility: hidden;
   position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%; /* Posisikan di tengah vertikal */
+  left: 50%; /* Posisikan di tengah horizontal */
+  transform: translate(-50%, -50%); /* Pusatkan tepat di tengah */
   background-color: #333;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
   display: flex;
   align-items: center;
+  justify-content: center; /* Pusatkan konten horizontal */
   gap: 10px;
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 9999;
+  min-width: 250px; /* Lebar minimum */
+  text-align: center; /* Pusatkan teks */
 }
+
+/* Hapus transform dari class show karena sudah ada di .toast */
 .toast.show {
   visibility: visible;
   opacity: 1;
+  transform: translate(-50%, -50%);
 }
+
+/* Warna toast tetap sama */
 .toast.success {
   background-color: #198754;
 }
@@ -29,9 +37,11 @@
   background-color: #ffc107;
   color: #000;
 }
+
 .toast.hide {
   opacity: 0;
   visibility: hidden;
+  transform: translate(-50%, -50%); /* Pertahankan posisi tengah saat hide */
 }
 .modal-body .info-row {
     display: flex;
