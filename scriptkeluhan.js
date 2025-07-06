@@ -35,55 +35,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const progressWrapper = document.getElementById("progress-wrapper");
   const progressBar = document.getElementById("progress-bar");
 
+  // Toast notification function
   function showToast(message, type = "success", onClick = null) {
     if (!toast) return;
-  
+
     toastMessage.textContent = message;
     toastIcon.textContent = type === "success" ? "✔️" : type === "error" ? "❌" : "⚠️";
     toast.className = "toast show " + type;
-  
-    let hideTimeout = null;
-  
-    const hideToast = () => {
-      toast.classList.add("hide");
-      setTimeout(() => {
-        toast.className = "toast " + type;
-      }, 400);
-      document.removeEventListener("click", handleOutsideClick);
-      toast.onclick = null;
-      clearTimeout(hideTimeout);
-    };
-  
-    // Auto-hide jika tidak konfirmasi
+
     if (onClick) {
       toast.onclick = () => {
-        hideToast();
-        onClick(); // Jalankan aksi
+        toast.classList.remove("show");
+        onClick();
+        toast.onclick = null;
       };
-  
-      // Jangan biarkan click di luar toast langsung menutup
-      const handleOutsideClick = (event) => {
-        if (!toast.contains(event.target)) {
-          // Tetap biarkan toast terlihat sampai diklik langsung
-        }
-      };
-      document.addEventListener("click", handleOutsideClick);
-  
     } else {
-      // Jika bukan tipe confirm
-      hideTimeout = setTimeout(() => {
-        hideToast();
-      }, 60000);
-  
-      const handleOutsideClick = (event) => {
-        if (!toast.contains(event.target)) {
-          hideToast();
-        }
-      };
-      document.addEventListener("click", handleOutsideClick);
+      setTimeout(() => {
+        toast.classList.add("hide");
+        setTimeout(() => {
+          toast.className = "toast " + type;
+        }, 400);
+      }, 4000);
     }
   }
-
   
   // === TAMBAH INPUT KELUHAN DAN PERBAIKAN ===
   document.getElementById("btn-tambah")?.addEventListener("click", () => {
