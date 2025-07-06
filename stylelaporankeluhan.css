@@ -16,24 +16,26 @@
   z-index: 9999;
 }
 .toast.show {
-  visibility: visible;
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translateY(0);
+}
+.toast.hide {
+  opacity: 0;
+  transform: translateY(20px);
 }
 .toast.success {
-  background-color: #198754;
+  background-color: #28a745;
 }
 .toast.error {
   background-color: #dc3545;
 }
 .toast.confirm {
   background-color: #ffc107;
-  color: #000;
+  color: #212529;
 }
-.toast.hide {
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, -50%) scale(0.9);
+.toast-icon {
+  display: inline-block;
+  margin-right: 10px;
 }
 .modal-body .info-row {
     display: flex;
