@@ -35,41 +35,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const progressWrapper = document.getElementById("progress-wrapper");
   const progressBar = document.getElementById("progress-bar");
 
-  // Toast notification function
   function showToast(message, type = "success", onClick = null) {
     if (!toast) return;
   
-    // Set isi dan tampilan awal
     toastMessage.textContent = message;
     toastIcon.textContent = type === "success" ? "✔️" : type === "error" ? "❌" : "⚠️";
     toast.className = "toast show " + type;
   
     let hideTimeout = null;
   
-    // Fungsi untuk menyembunyikan toast
     const hideToast = () => {
       toast.classList.add("hide");
       setTimeout(() => {
         toast.className = "toast " + type;
       }, 400);
       document.removeEventListener("click", handleOutsideClick);
+      toast.onclick = null;
       clearTimeout(hideTimeout);
     };
   
-    // Jika ada fungsi onClick, jalankan ketika toast diklik
+    // Auto-hide jika tidak konfirmasi
     if (onClick) {
       toast.onclick = () => {
         hideToast();
-        onClick();
-        toast.onclick = null;
+        onClick(); // Jalankan aksi
       };
+  
+      // Jangan biarkan click di luar toast langsung menutup
+      const handleOutsideClick = (event) => {
+        if (!toast.contains(event.target)) {
+          // Tetap biarkan toast terlihat sampai diklik langsung
+        }
+      };
+      document.addEventListener("click", handleOutsideClick);
+  
     } else {
-      // Auto-hide setelah 60 detik
+      // Jika bukan tipe confirm
       hideTimeout = setTimeout(() => {
         hideToast();
       }, 60000);
   
-      // Tutup jika klik di luar toast
       const handleOutsideClick = (event) => {
         if (!toast.contains(event.target)) {
           hideToast();
@@ -79,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-
+  
   // === TAMBAH INPUT KELUHAN DAN PERBAIKAN ===
   document.getElementById("btn-tambah")?.addEventListener("click", () => {
     const wrapper = document.getElementById("perbaikan-wrapper");
