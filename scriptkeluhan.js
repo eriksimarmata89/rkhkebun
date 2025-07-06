@@ -409,8 +409,6 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Tambahkan flag untuk mencegah multiple submit
             if (this.isSubmitting) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = originalText;
               return;
             }
             this.isSubmitting = true;
