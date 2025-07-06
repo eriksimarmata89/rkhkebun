@@ -28,6 +28,50 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Failed to initialize modal:", e);
   }
 
+  // Tambah grup perbaikan baru
+  const btnTambah = document.getElementById("btn-tambah");
+  const wrapper = document.getElementById("perbaikan-wrapper");
+  
+  btnTambah.addEventListener("click", () => {
+    const newGroup = document.createElement("div");
+    newGroup.className = "perbaikan-group border rounded p-3 mb-3 alert alert-primary";
+    newGroup.innerHTML = `
+      <div class="mb-2">
+        <label for="keluhan" class="form-label">Keluhan Pemanen</label>
+        <textarea class="form-control" name="keluhan" rows="3" required></textarea>
+      </div>
+      <div class="mb-2">
+        <label for="tanggal" class="form-label">Tanggal Keluhan</label>
+        <input type="date" class="form-control" name="tanggal" required>
+      </div>
+      <div class="mb-2">
+        <label for="foto_keluhan" class="form-label">Foto Keluhan</label>
+        <input type="file" class="form-control" name="foto_keluhan" accept="image/*" capture="environment">
+      </div>
+      <input type="hidden" name="status" value="Open">
+      <div class="mb-2">
+        <label>Deskripsi Perbaikan</label>
+        <textarea name="perbaikan[]" class="form-control" rows="2"></textarea>
+      </div>
+      <div class="mb-2">
+        <label>Tanggal Perbaikan</label>
+        <input type="date" name="tanggal_perbaikan[]" class="form-control">
+      </div>
+      <div class="mb-2">
+        <label>Foto Perbaikan</label>
+        <input type="file" name="foto_perbaikan[]" class="form-control" accept="image/*" capture="environment">
+      </div>
+      <button type="button" class="btn btn-danger btn-hapus-input">Hapus Permasalahan dan Perbaikan</button>
+    `;
+  
+    wrapper.appendChild(newGroup);
+  
+    // Tambahkan event hapus juga agar grup baru bisa dihapus
+    newGroup.querySelector('.btn-hapus-input').addEventListener('click', () => {
+      wrapper.removeChild(newGroup);
+    });
+  });
+
   const keluhanForm = document.getElementById("form-keluhan");
   const toast = document.getElementById("toast");
   const toastIcon = toast?.querySelector(".toast-icon");
