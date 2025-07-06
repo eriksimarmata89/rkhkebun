@@ -500,6 +500,9 @@ document.addEventListener("DOMContentLoaded", () => {
           document.querySelectorAll(".btn-hapus").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
+              const bulan = bulanInput.value;
+              const mulai = tanggalMulaiInput.value;
+              const akhir = tanggalAkhirInput.value;
               
               showToast("Tekan disini untuk konfirmasi hapus data", "confirm", () => {
                 let hapusUrl = "";
