@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
             progressBar.setAttribute("aria-valuenow", percent);
             
             // Format date
-            const tanggal = new Date(item.tanggal);
+            const tanggal = new Date(item.timestamp); // Ubah dari item.tanggal ke item.timestamp
             const tanggalFormatted = tanggal.toLocaleDateString("id-ID", {
               day: "numeric",
               month: "long",
@@ -311,8 +311,8 @@ document.addEventListener("DOMContentLoaded", () => {
               const index = button.getAttribute("data-index");
               const item = data[index];
               
-              // Format date
-              const tanggal = new Date(item.tanggal);
+              // Format date menggunakan timestamp
+              const tanggal = new Date(item.timestamp); // Ubah dari item.tanggal
               const tanggalFormatted = tanggal.toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "long",
