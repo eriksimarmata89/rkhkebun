@@ -231,6 +231,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const mulai = tanggalMulaiInput.value;
       const akhir = tanggalAkhirInput.value;
 
+      // Format tanggal ke YYYY-MM-DD jika belum
+      if (mulai) {
+        const dateMulai = new Date(mulai);
+        mulai = dateMulai.toISOString().split('T')[0];
+      }
+      
+      if (akhir) {
+        const dateAkhir = new Date(akhir);
+        akhir = dateAkhir.toISOString().split('T')[0];
+      }
+
       let url = "";
 
       if (mulai && akhir && !bulan) {
