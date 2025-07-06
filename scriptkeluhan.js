@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       const submitBtn = keluhanForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.textContent = "Menyimpan...";
+      submitBtn.textContent = "Sedang menyimpan...";
       
       try {
         // Generate unique ID for this data batch
@@ -443,7 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
-            submitBtn.textContent = "Menyimpan...";
+            submitBtn.textContent = "Sedang menyimpan...";
             
             // Tambahkan flag untuk mencegah multiple submit
             if (this.isSubmitting) {
