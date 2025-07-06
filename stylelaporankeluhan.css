@@ -1,9 +1,9 @@
 .toast {
   visibility: hidden;
   position: fixed;
-  top: 50%;
+  bottom: 30px;
   left: 50%;
-  transform: translate(-50%, -50%); /* Pusatkan horizontal dan vertikal */
+  transform: translateX(-50%);
   background-color: #333;
   color: white;
   padding: 12px 24px;
@@ -18,25 +18,20 @@
 .toast.show {
   visibility: visible;
   opacity: 1;
-  transform: translateY(0);
-}
-.toast.hide {
-  opacity: 0;
-  transform: translateY(20px);
 }
 .toast.success {
-  background-color: #28a745;
+  background-color: #198754;
 }
 .toast.error {
   background-color: #dc3545;
 }
 .toast.confirm {
   background-color: #ffc107;
-  color: #212529;
+  color: #000;
 }
-.toast-icon {
-  display: inline-block;
-  margin-right: 10px;
+.toast.hide {
+  opacity: 0;
+  visibility: hidden;
 }
 .modal-body .info-row {
     display: flex;
