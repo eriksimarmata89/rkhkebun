@@ -496,49 +496,33 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
 
-          // Ganti seluruh bagian btn-hapus event listener dengan ini:
+          // Delete button event
           document.querySelectorAll(".btn-hapus").forEach(button => {
             button.addEventListener("click", () => {
               const index = button.getAttribute("data-index");
-              const bulan = bulanInput.value;
-              const mulai = tanggalMulaiInput.value;
-              const akhir = tanggalAkhirInput.value;
               
-              // Konfirmasi sebelum menghapus
-              if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-                let hapusUrl = "https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?";
-                const params = new URLSearchParams();
-                
-                params.append('index', index);
-                
-                if (mulai && akhir && !bulan) {
-                  params.append('tanggal_mulai', mulai);
-                  params.append('tanggal_akhir', akhir);
-                } else if (bulan && !mulai && !akhir) {
-                  params.append('bulan', bulan);
+              showToast("Tekan disini untuk konfirmasi hapus data", "confirm", () => {
+                let hapusUrl = "";
+
+                if (mulai && akhir && (!bulan || bulan === "")) {
+                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index}`;
+                } else if (bulan && (!mulai || !akhir)) {
+                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus=${bulan}&index=${index}`;
+                } else {
+                  hapusUrl = `https://script.google.com/macros/s/AKfycbzpf3tKfxTKMLUH_JN5zG0OiqgVlXzY2MER40uQGCgCSptjsSsazHhdLF8FTNyTdKJlTw/exec?hapus_tanggal=${mulai}&akhir=${akhir}&index=${index}`;
                 }
-                
-                hapusUrl += params.toString();
-                
-                // Tampilkan loading
-                progressWrapper.style.display = "block";
-                progressBar.style.width = "0%";
-                progressBar.textContent = "0%";
-                
-                fetch(haspusUrl)
-                  .then(res => res.json())
-                  .then(response => {
-                    showToast(response.message || "Data berhasil dihapus", "success");
+
+                fetch(hapusUrl)
+                  .then(res => res.text())
+                  .then(msg => {
+                    showToast(msg, "success");
                     btnCari.click(); // Refresh data
                   })
                   .catch(err => {
                     console.error("Gagal menghapus data:", err);
-                    showToast("Gagal menghapus data: " + err.message, "error");
-                  })
-                  .finally(() => {
-                    progressWrapper.style.display = "none";
+                    showToast("Terjadi kesalahan saat menghapus", "error");
                   });
-              }
+              });
             });
           });
         })
