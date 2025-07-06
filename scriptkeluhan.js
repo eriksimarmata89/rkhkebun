@@ -228,8 +228,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnCari && tbody) {
     btnCari.addEventListener("click", () => {
       const bulan = bulanInput.value;
-      const mulai = tanggalMulaiInput.value;
-      const akhir = tanggalAkhirInput.value;
+      let mulai = tanggalMulaiInput.value;
+      let akhir = tanggalAkhirInput.value;
 
       // Format tanggal ke YYYY-MM-DD jika belum
       if (mulai) {
