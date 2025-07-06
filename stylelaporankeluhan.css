@@ -1,32 +1,39 @@
 .toast {
-  visibility: hidden;
   position: fixed;
-  top: 50%; /* Posisikan di tengah vertikal */
-  left: 50%; /* Posisikan di tengah horizontal */
+  top: 50%; /* Posisi vertikal di tengah */
+  left: 50%; /* Posisi horizontal di tengah */
   transform: translate(-50%, -50%); /* Pusatkan tepat di tengah */
   background-color: #333;
   color: white;
-  padding: 12px 24px;
+  padding: 15px 25px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center; /* Pusatkan konten horizontal */
   gap: 10px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: all 0.3s ease;
   z-index: 9999;
-  min-width: 250px; /* Lebar minimum */
-  text-align: center; /* Pusatkan teks */
+  min-width: 250px;
+  max-width: 80%;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Hapus transform dari class show karena sudah ada di .toast */
 .toast.show {
   visibility: visible;
   opacity: 1;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); /* Tetap di tengah saat muncul */
 }
 
-/* Warna toast tetap sama */
+.toast.hide {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -50%); /* Tetap di tengah saat menghilang */
+}
+
+/* Warna toast */
 .toast.success {
   background-color: #198754;
 }
@@ -38,10 +45,11 @@
   color: #000;
 }
 
-.toast.hide {
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, -50%); /* Pertahankan posisi tengah saat hide */
+/* Style untuk konten toast */
+.toast-message {
+  margin: 0;
+  padding: 0;
+  flex-grow: 1;
 }
 .modal-body .info-row {
     display: flex;
