@@ -1,39 +1,24 @@
 .toast {
+  visibility: hidden;
   position: fixed;
-  top: 50%; /* Posisi vertikal di tengah */
-  left: 50%; /* Posisi horizontal di tengah */
-  transform: translate(-50%, -50%); /* Pusatkan tepat di tengah */
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #333;
   color: white;
-  padding: 15px 25px;
+  padding: 12px 24px;
   border-radius: 8px;
   display: flex;
   align-items: center;
-  justify-content: center; /* Pusatkan konten horizontal */
   gap: 10px;
   opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
   z-index: 9999;
-  min-width: 250px;
-  max-width: 80%;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-
 .toast.show {
   visibility: visible;
   opacity: 1;
-  transform: translate(-50%, -50%); /* Tetap di tengah saat muncul */
 }
-
-.toast.hide {
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, -50%); /* Tetap di tengah saat menghilang */
-}
-
-/* Warna toast */
 .toast.success {
   background-color: #198754;
 }
@@ -44,12 +29,9 @@
   background-color: #ffc107;
   color: #000;
 }
-
-/* Style untuk konten toast */
-.toast-message {
-  margin: 0;
-  padding: 0;
-  flex-grow: 1;
+.toast.hide {
+  opacity: 0;
+  visibility: hidden;
 }
 .modal-body .info-row {
     display: flex;
