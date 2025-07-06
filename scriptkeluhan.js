@@ -397,9 +397,9 @@ document.addEventListener("DOMContentLoaded", () => {
               const item = data[index];
               
               // Isi form edit dengan data yang ada
-              document.getElementById("edit-id").value = item.timestamp; // Gunakan timestamp sebagai ID unik
+              document.getElementById("edit-id").value = item.timestamp;
               document.getElementById("edit-keluhan").value = item.keluhan;
-              document.getElementById("edit-tanggal-keluhan").value = item.tanggal;
+              document.getElementById("edit-tanggal-keluhan").value = new Date(item.timestamp).toISOString().split('T')[0]; 
               document.getElementById("edit-perbaikan").value = item.perbaikan || "";
               document.getElementById("edit-tanggal-perbaikan").value = item.tanggal_perbaikan || "";
               
